@@ -1,12 +1,12 @@
 import {Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm";
 import { Software } from "./Software";
-import { User } from "./User";
+import { Group } from "./Group";
 
 @Entity()
-export class UserVersion {
+export class GroupVersion {
 
-    @ManyToOne(() => User, {primary: true})
-    user: User;
+    @ManyToOne(() => Group, {primary: true})
+    group: Group;
 
     @ManyToOne(() => Software, {primary: true})
     software: Software;
