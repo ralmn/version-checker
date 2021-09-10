@@ -7,11 +7,11 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn to="/register" text>
+      <v-btn to="/register" text v-if="!isLogged">
         <span class="mr-2">Register</span>
       </v-btn>
 
-      <v-btn to="/login" text>
+      <v-btn to="/login" text v-if="!isLogged">
         <span class="mr-2">Login</span>
       </v-btn>
     </v-app-bar>
@@ -25,13 +25,37 @@
 </template>
 
 <script lang="ts">
+import axios from "axios";
 import Vue from "vue";
+import { Component, Watch } from 'vue-property-decorator'
 
-export default Vue.extend({
-  name: "App",
 
-  data: () => ({
-    //
-  }),
-});
+@Component({})
+export default class App extends Vue {
+  public logged = false;
+
+  mounted() {
+    let tokenLS = localStorage.getItem("token");
+    if (tokenLS) {
+      axios
+        .get("/api/user/profile", {
+          headers: {
+            Authorization: `Bearer ${tokenLS}`,
+          },
+        })
+        .then(() => {
+          this.$store.commit('setToken', tokenLS);
+        });
+    }
+  }
+
+
+
+
+  @Watch('$store.getters.isLogged')
+  get isLogged(){
+    return this.$store.getters.isLogged;
+  }
+
+}
 </script>

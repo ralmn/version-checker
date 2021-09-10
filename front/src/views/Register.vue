@@ -45,7 +45,7 @@
 <script lang="ts">
 import axios from "axios";
 import Vue from "vue";
-import Component from "vue-class-component";
+import {Component, Watch} from "vue-property-decorator";
 
 @Component({})
 export default class Register extends Vue {
@@ -57,6 +57,17 @@ export default class Register extends Vue {
 
   public errorMessage = "";
   public okMessage = false;
+
+  mounted(){
+    this.hideRegisterIfLogged();
+  }
+
+  @Watch('$store.getters.isLogged')
+  hideRegisterIfLogged() {
+    if(this.$store.getters.isLogged){
+      this.$router.push({name: 'Home'});
+    }
+  }
 
   validateUsername(value: string): boolean | string {
     return value.length >= 5 || "Min length : 5";

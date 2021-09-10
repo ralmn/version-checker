@@ -29,7 +29,7 @@
 <script lang="ts">
 import axios from "axios";
 import Vue from "vue";
-import Component from "vue-class-component";
+import {Component, Watch} from "vue-property-decorator";
 
 @Component({})
 export default class Login extends Vue {
@@ -38,11 +38,24 @@ export default class Login extends Vue {
 
   public errorMessage = "";
 
+  mounted(){
+    this.hideLoggingIfLogged();
+  }
+
+  @Watch('$store.getters.isLogged')
+  hideLoggingIfLogged() {
+    if(this.$store.getters.isLogged){
+      this.$router.push({name: 'Home'});
+    }
+  }
+
+  
+
   public required(value: string): boolean | string {
     return !!value || "Required.";
   }
 
-  public async loginSumbit() {
+  public async loginSumbit() : Promise<void> {
     if ((this.$refs as any).loginForm.validate()) {
       let { data } = await axios.post(
         "/api/auth/login",
@@ -58,8 +71,7 @@ export default class Login extends Vue {
       );
 
       if (data.ok) {
-        //nothing
-        console.log(data);
+        this.$store.commit('setToken', data.token);
       } else {
         this.errorMessage = data.error;
       }
