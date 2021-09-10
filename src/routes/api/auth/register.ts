@@ -5,7 +5,13 @@ import * as bcrypt from "bcrypt";
 
 export async function register(req, res) {
     let userRepository =  getConnection().getRepository(User);
-    if(req.body.username && req.body.password && req.body.email){
+    if(req.body.username && req.body.password && req.body.email && req.body.confirmationPassword){
+
+        if(req.body.password != req.body.confirmationPassword){
+            res.json({ok: false, error: 'Password and Confirmation password are not corresponding'});
+            return;
+        }
+
         let user = await userRepository.createQueryBuilder('user')
             .where('LOWER(user.username) = LOWER(:username)', {username: req.body.username})
             .getOne();
