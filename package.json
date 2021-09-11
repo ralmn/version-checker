@@ -1,6 +1,6 @@
 {
    "name": "version-checker-common",
-   "version": "1.0.0",
+   "version": "1.0.0-dev",
    "main": "src/index.ts",
    "license": "MIT",
    "devDependencies": {
