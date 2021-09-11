@@ -32,4 +32,4 @@ COPY --from=buildFront /build/front/dist /app/front
 ENV TYPEORM_MIGRATIONS "/app/migration/*.js"
 ENV TYPEORM_MIGRATIONS_DIR "/app/migration"
 
-CMD node_modules/.bin/typeorm migration:show || node_modules/.bin/typeorm ; migration:run && node .
+CMD node_modules/.bin/typeorm migration:show || node_modules/.bin/typeorm migration:run ; node .
