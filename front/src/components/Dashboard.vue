@@ -56,7 +56,7 @@ import Group from "../components/Group.vue";
 })
 export default class Dashboard extends Vue {
   private groups: IGroup[] = [];
-  private selectedGroup: IGroup = null;
+  private selectedGroup: IGroup | null = null;
 
   mounted() {
     axios
@@ -67,11 +67,11 @@ export default class Dashboard extends Vue {
       })
       .then((res) => {
         const { data } = res;
-        this.groups = data.data.map((gm) => {
+        this.groups = data.data.map((gm : any) => {
           return {
             id: gm.group.id,
             name: gm.group.name,
-            softwares: gm.group.versions.map((v) => {
+            softwares: gm.group.versions.map((v: any) => {
               return {
                 name: v.software.name,
                 type: v.software.type,
@@ -87,7 +87,7 @@ export default class Dashboard extends Vue {
             this.selectedGroup = this.groups[0];
           } else {
             let idGroups = this.groups.filter(
-              (g) => g.id == this.selectedGroup.id
+              (g) => g.id == this.selectedGroup!.id
             );
             if (idGroups.length) {
               this.selectedGroup = idGroups[0];
