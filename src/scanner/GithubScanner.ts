@@ -7,7 +7,7 @@ import { IScanner } from "./IScanner";
 import { ifError } from "assert";
 
 const RATELIMIT_MINIMUM = 20;
-const DISABLED = true;
+const DISABLED = false;
 
 export class GithubScanner implements IScanner<GithubSoftware> {
 
@@ -59,7 +59,8 @@ export class GithubScanner implements IScanner<GithubSoftware> {
                 .map(release => software.useReleaseTag ? release.tag_name : release.name)
                 .map(v => semver.clean(v))
                 .filter(e => e != '' && e != null)
-                .sort(sortVersion);
+                .sort(sortVersion)
+                .reverse();
             let edited = false;
 
             for (let version of versions) {
