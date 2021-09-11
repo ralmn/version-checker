@@ -1,3 +1,4 @@
+import { group } from "console";
 import {Column, Entity, ManyToMany, ManyToOne} from "typeorm";
 import { Group } from "./Group";
 import { User } from "./User";
@@ -10,7 +11,7 @@ export enum GroupMemberRole {
 @Entity()
 export class GroupMember {
 
-    @ManyToOne(() => Group, {primary: true})
+    @ManyToOne(() => Group, group => group.members ,{primary: true})
     group: Group;
 
     @ManyToOne(() => User, {primary: true})

@@ -31,7 +31,7 @@ export async function login(req, res) {
         const token = jwt.sign({
             id: user.id,
             username: user.username
-        }, config.auth.jwt_secret, {expiresIn: '600secs'})
+        }, config.auth.jwt_secret, {expiresIn: '6days'})
 
         res.json({ok: true, token: token});
         return;

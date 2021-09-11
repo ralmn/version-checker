@@ -52,7 +52,7 @@ export default class App extends Vue {
 
 
 
-  @Watch('$store.getters.isLogged')
+  @Watch('$store.state')
   get isLogged(){
     return this.$store.getters.isLogged;
   }

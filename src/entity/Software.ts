@@ -32,6 +32,9 @@ export abstract class Software {
     @UpdateDateColumn({ nullable: true})
     updatedAt: Date;
 
+    @Column()
+    type: string;
+
     // constructor(name: string){
     //     this.name = name;
     // }
