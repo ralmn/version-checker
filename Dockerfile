@@ -29,4 +29,7 @@ RUN yarn install --production
 COPY --from=buildServer /build/dist /app
 COPY --from=buildFront /build/front/dist /app/front
 
-CMD node_modules/.bin/typeorm migration:show && node_modules/.bin/typeorm migration:run && node .
+ENV TYPEORM_MIGRATIONS "/app/migration/*.js"
+ENV TYPEORM_MIGRATIONS_DIR "/app/migration"
+
+CMD node_modules/.bin/typeorm migration:show || node_modules/.bin/typeorm ; migration:run && node .
