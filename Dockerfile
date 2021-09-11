@@ -8,28 +8,25 @@ RUN yarn install --dev
 RUN yarn build
 
 
-FROM node as buildServer
+# FROM node as buildServer
 
-WORKDIR /build/
+# WORKDIR /build/
 
-COPY package.json package-lock.json tsconfig.json yarn.lock /build/
+# COPY package.json package-lock.json tsconfig.json yarn.lock /build/
 
-RUN yarn install --dev
-COPY ./src /build/src
-RUN yarn tsc
+# RUN yarn install --dev
+# COPY ./src /build/src
+# RUN yarn tsc
 
 FROM node
 
 WORKDIR /app
 
-COPY package.json package-lock.json tsconfig.json yarn.lock /app/
+COPY package.json package-lock.json tsconfig.json yarn.lock ormconfig.json /app/
 
 RUN yarn install --production
-
-COPY --from=buildServer /build/dist /app
+COPY ./src /app/src
 COPY --from=buildFront /build/front/dist /app/front
 
-ENV TYPEORM_MIGRATIONS "/app/migration/*.js"
-ENV TYPEORM_MIGRATIONS_DIR "/app/migration"
 
-CMD node_modules/.bin/typeorm migration:show || node_modules/.bin/typeorm migration:run ; node .
+CMD yarn typeorm migration:show || yarn typeorm migration:run ; yarn ts-node .
