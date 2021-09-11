@@ -26,11 +26,6 @@ export class OpenJDKScanner implements IScanner<CustomSoftware> {
                 .map(release => release.version.semver)
                 .filter(e => e != '' && e != null);
 
-            let forLatest = (data as any[])
-                .filter(e => e.prerelease == false && e.draft == false)
-                .map(release => release.version.semver)
-                .filter(e => e != '' && e != null)
-            //.sort(sortVersion);
             let edited = false;
 
             for (let version of versions) {
@@ -44,8 +39,8 @@ export class OpenJDKScanner implements IScanner<CustomSoftware> {
             }
 
 
-            if (forLatest.length && forLatest[0] != software.latestVersion) {
-                software.latestVersion = forLatest[0];
+            if (software.versions.length && software.versions[0] != software.latestVersion) {
+                software.latestVersion = software.versions[0];
                 edited = true;
                 console.log('new latest version');
             }
