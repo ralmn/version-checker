@@ -27,8 +27,7 @@
 <script lang="ts">
 import axios from "axios";
 import Vue from "vue";
-import { Component, Watch } from 'vue-property-decorator'
-
+import { Component, Watch } from "vue-property-decorator";
 
 @Component({})
 export default class App extends Vue {
@@ -44,18 +43,14 @@ export default class App extends Vue {
           },
         })
         .then(() => {
-          this.$store.commit('setToken', tokenLS);
+          this.$store.commit("setToken", tokenLS);
         });
     }
   }
 
-
-
-
-  @Watch('$store.state')
-  get isLogged(){
+  @Watch("$store.state")
+  get isLogged() {
     return this.$store.getters.isLogged;
   }
-
 }
 </script>

@@ -4,38 +4,42 @@
       <v-container>
         <h1>Register</h1>
 
-        <v-alert transition="fade-transition" type="error" v-if="errorMessage">{{ errorMessage }}</v-alert>
+        <v-alert transition="fade-transition" type="error" v-if="errorMessage">
+          {{ errorMessage }}
+        </v-alert>
         <v-alert transition="fade-transition" type="success" v-if="okMessage">
           Welcome ! You can now
           <router-link :to="{ name: 'Login' }">login you</router-link>
         </v-alert>
 
-        <v-form ref="registerForm" v-model="valid" id="registerForm" @submit.prevent="registerSubmit">
+        <v-form
+          ref="registerForm"
+          v-model="valid"
+          id="registerForm"
+          @submit.prevent="registerSubmit">
           <v-text-field
             v-model="username"
             label="Username"
             min="5"
-            :rules="[required, validateUsername]"
-          />
+            :rules="[required, validateUsername]" />
           <v-text-field
             v-model="email"
             label="Email"
-            :rules="[required, validateEmail]"
-          />
+            :rules="[required, validateEmail]" />
           <v-text-field
             v-model="password"
             label="Password"
             type="password"
-            :rules="[required, validatePassword]"
-          />
+            :rules="[required, validatePassword]" />
           <v-text-field
             v-model="confirmationPassword"
             label="Password confirmation"
             type="password"
-            :rules="[required, passwordConfirm]"
-          />
+            :rules="[required, passwordConfirm]" />
 
-          <v-btn type="submit" color="success" form="registerForm">Register</v-btn>
+          <v-btn type="submit" color="success" form="registerForm">
+            Register
+          </v-btn>
         </v-form>
       </v-container>
     </v-sheet>
@@ -45,7 +49,7 @@
 <script lang="ts">
 import axios from "axios";
 import Vue from "vue";
-import {Component, Watch} from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 
 @Component({})
 export default class Register extends Vue {
@@ -58,14 +62,14 @@ export default class Register extends Vue {
   public errorMessage = "";
   public okMessage = false;
 
-  mounted(){
+  mounted() {
     this.hideRegisterIfLogged();
   }
 
-  @Watch('$store.getters.isLogged')
+  @Watch("$store.getters.isLogged")
   hideRegisterIfLogged() {
-    if(this.$store.getters.isLogged){
-      this.$router.push({name: 'Home'});
+    if (this.$store.getters.isLogged) {
+      this.$router.push({ name: "Home" });
     }
   }
 
@@ -118,7 +122,7 @@ export default class Register extends Vue {
 
       if (data.ok) {
         this.okMessage = true;
-        this.errorMessage = '';
+        this.errorMessage = "";
       } else {
         this.errorMessage = data.error;
       }
@@ -127,5 +131,4 @@ export default class Register extends Vue {
 }
 </script>
 
-<style>
-</style>
+<style></style>

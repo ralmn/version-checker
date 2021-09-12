@@ -10,14 +10,12 @@
           <v-text-field
             v-model="username"
             label="Username"
-            :rules="[required]"
-          />
+            :rules="[required]" />
           <v-text-field
             v-model="password"
             label="Password"
             type="password"
-            :rules="[required]"
-          />
+            :rules="[required]" />
 
           <v-btn type="submit" color="success" form="loginForm">Login</v-btn>
         </v-form>
@@ -29,7 +27,7 @@
 <script lang="ts">
 import axios from "axios";
 import Vue from "vue";
-import {Component, Watch} from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 
 @Component({})
 export default class Login extends Vue {
@@ -38,24 +36,22 @@ export default class Login extends Vue {
 
   public errorMessage = "";
 
-  mounted(){
+  mounted() {
     this.hideLoggingIfLogged();
   }
 
-  @Watch('$store.getters.isLogged')
+  @Watch("$store.getters.isLogged")
   hideLoggingIfLogged() {
-    if(this.$store.getters.isLogged){
-      this.$router.push({name: 'Home'});
+    if (this.$store.getters.isLogged) {
+      this.$router.push({ name: "Home" });
     }
   }
-
-  
 
   public required(value: string): boolean | string {
     return !!value || "Required.";
   }
 
-  public async loginSumbit() : Promise<void> {
+  public async loginSumbit(): Promise<void> {
     if ((this.$refs as any).loginForm.validate()) {
       let { data } = await axios.post(
         "/api/auth/login",
@@ -71,7 +67,7 @@ export default class Login extends Vue {
       );
 
       if (data.ok) {
-        this.$store.commit('setToken', data.token);
+        this.$store.commit("setToken", data.token);
       } else {
         this.errorMessage = data.error;
       }
@@ -80,5 +76,4 @@ export default class Login extends Vue {
 }
 </script>
 
-<style>
-</style>
+<style></style>

@@ -1,24 +1,29 @@
 <template>
-  <v-dialog origin="top center" ref="dialog" :value="software != null" @click:outside="close" >
+  <v-dialog
+    origin="top center"
+    ref="dialog"
+    :value="software != null"
+    @click:outside="close">
     <v-card>
-      <v-card-title v-if="dbSoftware != null"
-        >Edit software <v-spacer></v-spacer>
-        <v-btn icon @click="close"><v-icon>mdi-close</v-icon></v-btn></v-card-title
-      >
-      <v-card-title v-else
-        >Add software <v-spacer></v-spacer>
-        <v-btn icon @click="close"
-          ><v-icon>mdi-close</v-icon></v-btn
-        ></v-card-title
-      >
+      <v-card-title v-if="dbSoftware != null">
+        Edit software
+        <v-spacer></v-spacer>
+        <v-btn icon @click="close"><v-icon>mdi-close</v-icon></v-btn>
+      </v-card-title>
+      <v-card-title v-else>
+        Add software
+        <v-spacer></v-spacer>
+        <v-btn icon @click="close"><v-icon>mdi-close</v-icon></v-btn>
+      </v-card-title>
       <div v-if="dbSoftware != null">
         <v-container>
           <v-row>
             <v-col>
               <h2>
-                <v-icon v-if="dbSoftware.type == 'GithubSoftware'"
-                  >mdi-github</v-icon
-                >{{ dbSoftware.name }}
+                <v-icon v-if="dbSoftware.type == 'GithubSoftware'">
+                  mdi-github
+                </v-icon>
+                {{ dbSoftware.name }}
               </h2>
             </v-col>
           </v-row>
@@ -27,8 +32,7 @@
               <v-combobox
                 label="Version"
                 :items="softwareVersions"
-                v-model="currentVersion"
-              ></v-combobox>
+                v-model="currentVersion"></v-combobox>
             </v-col>
           </v-row>
           <v-row>
@@ -36,9 +40,9 @@
               <v-btn
                 color="primary"
                 :disabled="!currentVersion"
-                @click="saveSoftware"
-                >Save</v-btn
-              >
+                @click="saveSoftware">
+                Save
+              </v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -56,19 +60,20 @@
                 label="Name"
                 v-model="softwareSelected"
                 :items="softwaresNames"
-                item-text="name"
-              >
+                item-text="name">
                 <template v-slot:item="data">
                   <!-- HTML that describe how select should render items when the select is open -->
-                  <v-icon v-if="data.item.type == 'GithubSoftware'"
-                    >mdi-github</v-icon
-                  >{{ data.item.name }}
+                  <v-icon v-if="data.item.type == 'GithubSoftware'">
+                    mdi-github
+                  </v-icon>
+                  {{ data.item.name }}
                 </template>
                 <template v-slot:selection="data">
                   <!-- HTML that describe how select should render items when the select is open -->
-                  <v-icon v-if="data.item.type == 'GithubSoftware'"
-                    >mdi-github</v-icon
-                  >{{ data.item.name }}
+                  <v-icon v-if="data.item.type == 'GithubSoftware'">
+                    mdi-github
+                  </v-icon>
+                  {{ data.item.name }}
                 </template>
               </v-autocomplete>
             </v-col>
@@ -78,9 +83,9 @@
               <v-btn
                 color="primary"
                 :disabled="softwareSelected == null"
-                @click="addSoftware"
-                >Add</v-btn
-              >
+                @click="addSoftware">
+                Add
+              </v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -108,10 +113,9 @@ export default class SoftwareEdit extends Vue {
 
   private softwaresNames: ISoftwareSearch[] = [];
   private softwareSelected: string | null = null;
-  private currentVersion : string | null = null;
+  private currentVersion: string | null = null;
 
   mounted() {
-
     this.initSoftware();
 
     let groupSoftwareName = this.group.softwares.map((s) => s.name);
@@ -127,8 +131,8 @@ export default class SoftwareEdit extends Vue {
     });
   }
 
-  @Watch('software')
-  initSoftware(){
+  @Watch("software")
+  initSoftware() {
     if (this.software != null && this.software.name != null) {
       //call server
 
@@ -192,10 +196,12 @@ export default class SoftwareEdit extends Vue {
       });
   }
 
-  saveSoftware(){
+  saveSoftware() {
     axios
       .post(
-        `/api/user/group/${this.group.id}/software/${this.dbSoftware!.name}/version`,
+        `/api/user/group/${this.group.id}/software/${
+          this.dbSoftware!.name
+        }/version`,
         {
           version: this.currentVersion!,
         },
@@ -218,19 +224,20 @@ export default class SoftwareEdit extends Vue {
             groupVersion: gv.version,
           };
           //this.$emit("update:software", software);
-          this.$emit('update', software);
+          this.$emit("update", software);
           this.dbSoftware = software;
           this.close();
-        }else{
+        } else {
           // TODO : handle error
         }
-      }).catch(err => {
+      })
+      .catch((err) => {
         // TODO : handle error
       });
   }
 
-  get softwareVersions(){
-    return this.dbSoftware?.versions?.reverse() || []
+  get softwareVersions() {
+    return this.dbSoftware?.versions?.reverse() || [];
   }
 
   close() {
@@ -240,5 +247,4 @@ export default class SoftwareEdit extends Vue {
 }
 </script>
 
-<style>
-</style>
+<style></style>

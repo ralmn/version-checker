@@ -16,5 +16,4 @@ import { Component } from "vue-property-decorator";
 export default class LandingPage extends Vue {}
 </script>
 
-<style>
-</style>
+<style></style>

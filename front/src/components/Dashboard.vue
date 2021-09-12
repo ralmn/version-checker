@@ -13,8 +13,7 @@
               v-for="n in groups"
               :key="n.id"
               link
-              @click="selectGroup(n)"
-            >
+              @click="selectGroup(n)">
               <v-list-item-content>
                 <v-list-item-title>
                   <v-badge
@@ -22,8 +21,8 @@
                     :value="countSoftwareNotUpdated(n)"
                     :content="countSoftwareNotUpdated(n)"
                     label="Updates available"
-                    bordered
-                    >{{ n.name }}
+                    bordered>
+                    {{ n.name }}
                   </v-badge>
                 </v-list-item-title>
               </v-list-item-content>
@@ -48,7 +47,6 @@
         </v-sheet>
       </v-col>
     </v-row>
-    
   </v-container>
 </template>
 
@@ -70,7 +68,7 @@ export default class Dashboard extends Vue {
   private groups: IGroup[] = [];
   private selectedGroup: IGroup | null = null;
 
-  mounted(){
+  mounted() {
     this.loadGroups();
   }
 
@@ -122,20 +120,20 @@ export default class Dashboard extends Vue {
     this.selectedGroup = group;
   }
 
-  groupEdited(){
+  groupEdited() {
     this.$forceUpdate();
   }
 
   countSoftwareNotUpdated(group: IGroup) {
-    return group.softwares.filter((s) => s.groupVersion && !_softwareIsUpdated(s)).length;
+    return group.softwares.filter(
+      (s) => s.groupVersion && !_softwareIsUpdated(s)
+    ).length;
   }
 
-  groupCreated(){
+  groupCreated() {
     this.loadGroups();
   }
-
 }
 </script>
 
-<style>
-</style>
+<style></style>
