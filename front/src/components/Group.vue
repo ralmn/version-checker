@@ -72,6 +72,7 @@
       <span>Add software</span>
     </v-tooltip>
     <SoftwareEdit
+      v-if="softwareEdit"
       v-model="softwareEdit"
       :group="group"
       @close="softwareEdit = null"
