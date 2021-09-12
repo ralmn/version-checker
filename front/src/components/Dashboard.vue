@@ -30,14 +30,7 @@
             </v-list-item>
 
             <v-divider class="my-2"></v-divider>
-
-            <v-list-item link color="grey lighten-4">
-              <v-list-item-content>
-                <v-list-item-title>
-                  <v-icon>mdi-plus</v-icon> Create group
-                </v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+            <CreateGroup @update="groupCreated" />
           </v-list>
         </v-sheet>
       </v-col>
@@ -55,6 +48,7 @@
         </v-sheet>
       </v-col>
     </v-row>
+    
   </v-container>
 </template>
 
@@ -66,16 +60,21 @@ import {
   IGroup,
   softwareIsUpdated as _softwareIsUpdated,
 } from "../object/IGroup";
-import Group from "../components/Group.vue";
+import Group from "./Group.vue";
+import CreateGroup from "./CreateGroup.vue";
 
 @Component({
-  components: { Group },
+  components: { Group, CreateGroup },
 })
 export default class Dashboard extends Vue {
   private groups: IGroup[] = [];
   private selectedGroup: IGroup | null = null;
 
-  mounted() {
+  mounted(){
+    this.loadGroups();
+  }
+
+  loadGroups() {
     axios
       .get("/api/user/groups", {
         headers: {
@@ -115,6 +114,7 @@ export default class Dashboard extends Vue {
         } else {
           this.selectedGroup = null;
         }
+        this.$forceUpdate();
       });
   }
 
@@ -129,6 +129,11 @@ export default class Dashboard extends Vue {
   countSoftwareNotUpdated(group: IGroup) {
     return group.softwares.filter((s) => s.groupVersion && !_softwareIsUpdated(s)).length;
   }
+
+  groupCreated(){
+    this.loadGroups();
+  }
+
 }
 </script>
 
