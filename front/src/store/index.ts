@@ -15,7 +15,6 @@ export default new Vuex.Store({
             state.token = token;
             const decoded = jwtDecode<any>(token);
             state.token_expire_at = decoded.exp;
-            console.log(decoded);
             state.user = decoded;
             localStorage.setItem('token', token);
         }

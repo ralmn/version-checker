@@ -115,7 +115,6 @@ export default class Dashboard extends Vue {
         } else {
           this.selectedGroup = null;
         }
-        console.log(this.selectedGroup);
       });
   }
 

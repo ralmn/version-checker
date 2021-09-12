@@ -111,11 +111,8 @@ export default class Group extends Vue {
   }
 
   updateFromSoftwareEdit(software: ISoftware){
-    console.log('updateFromSoftwareEdit', software, software?.name);
-
     if(software?.name){
       let index = this.group.softwares.findIndex(s => s.name == software.name)
-      console.log(index);
       if(index != -1 ){
         this.group.softwares[index] = software;
       }else{

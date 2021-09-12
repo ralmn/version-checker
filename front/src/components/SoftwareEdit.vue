@@ -158,12 +158,10 @@ export default class SoftwareEdit extends Vue {
   }
 
   searchNameValue(value: ISoftwareSearch) {
-    console.log(value);
     return value.name;
   }
 
   addSoftware() {
-    console.log(this.softwareSelected);
     axios
       .post(
         `/api/user/group/${this.group.id}/software/add`,
@@ -181,7 +179,6 @@ export default class SoftwareEdit extends Vue {
         const { data } = res;
         if (data.ok) {
           let gv = data.gv;
-          console.log(gv);
           let software: ISoftware = {
             name: gv.software.name,
             type: gv.software.type,
@@ -191,7 +188,6 @@ export default class SoftwareEdit extends Vue {
           };
           this.$emit("update:software", software);
           this.dbSoftware = software;
-          console.log(software);
         }
       });
   }
@@ -226,10 +222,10 @@ export default class SoftwareEdit extends Vue {
           this.dbSoftware = software;
           this.close();
         }else{
-          console.log(data);
+          // TODO : handle error
         }
       }).catch(err => {
-        console.log(err);
+        // TODO : handle error
       });
   }
 
