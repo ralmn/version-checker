@@ -56,33 +56,102 @@
           </v-row>
           <v-row>
             <v-col>
-              <v-autocomplete
+              <v-combobox
                 label="Name"
                 v-model="softwareSelected"
+                :search-input.sync="searchSoftware"
                 :items="softwaresNames"
                 item-text="name">
                 <template v-slot:item="data">
-                  <!-- HTML that describe how select should render items when the select is open -->
                   <v-icon v-if="data.item.type == 'GithubSoftware'">
                     mdi-github
                   </v-icon>
                   {{ data.item.name }}
                 </template>
                 <template v-slot:selection="data">
-                  <!-- HTML that describe how select should render items when the select is open -->
-                  <v-icon v-if="data.item.type == 'GithubSoftware'">
-                    mdi-github
-                  </v-icon>
-                  {{ data.item.name }}
+                  <span v-if="typeof data.item == 'string'">
+                    <v-icon v-if="data.item.indexOf('github:') === 0">
+                      mdi-plus
+                    </v-icon>
+                    {{data.item}}
+                  </span>
+                  <span v-else>
+                    <v-icon v-if="data.item.type == 'GithubSoftware'">
+                      mdi-github
+                    </v-icon>
+                    {{ data.item.name }}
+                  </span>
+                  
                 </template>
-              </v-autocomplete>
+                <template v-slot:no-data>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title
+                        v-if="
+                          searchSoftware &&
+                          searchSoftware.indexOf('github:') == 0
+                        ">
+                        <span v-if="/(.+)\/(.+)/.test(searchSoftware)">
+                          For register github repository
+                          <code>
+                            {{ searchSoftware.replace("github:", "") }}
+                          </code>
+                          on Version Checker, Press
+                          <kbd>enter</kbd>
+                          and click on
+                          <v-btn small color="primary">Add</v-btn>
+                          button
+                        </span>
+                        <span v-else>
+                          Please use format :
+                          <code>
+                            github:&lt;github user&gt;/&lt;github repository&gt;
+                          </code>
+                        </span>
+                      </v-list-item-title>
+                      <v-list-item-title v-else-if="searchSoftware == null">
+                        Please indicate software
+                      </v-list-item-title>
+                      <v-list-item-title v-else>
+                        Software
+                        <code>{{ searchSoftware }}</code>
+                        is not known
+                      </v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+              </v-combobox>
             </v-col>
+          </v-row>
+          <v-row>
+            <v-row>
+              <v-col>
+                <p>Missing your software ?</p>
+                <ul>
+                  <li>
+                    Your software use github release ? register him with type
+                    <code>
+                      github:&lt;github user&gt;/&lt;github repository&gt;
+                    </code>
+                  </li>
+                  <li>
+                    Else, you can request an integration on
+                    <a
+                      target="_blank"
+                      href="https://github.com/ralmn/version-checker">
+                      Version Checker's github repository
+                    </a>
+                    (create an issue)
+                  </li>
+                </ul>
+              </v-col>
+            </v-row>
           </v-row>
           <v-row>
             <v-col>
               <v-btn
                 color="primary"
-                :disabled="softwareSelected == null"
+                :disabled="addBtnDisabled"
                 @click="addSoftware">
                 Add
               </v-btn>
@@ -112,23 +181,30 @@ export default class SoftwareEdit extends Vue {
   @Prop({ required: true }) group!: IGroup;
 
   private softwaresNames: ISoftwareSearch[] = [];
-  private softwareSelected: string | null = null;
+  private softwareSelected: string | ISoftware  | null = null;
   private currentVersion: string | null = null;
+  private searchSoftware: string | null = null;
 
   mounted() {
     this.initSoftware();
 
     let groupSoftwareName = this.group.softwares.map((s) => s.name);
 
-    axios.get("/api/software/list").then((res) => {
-      let { data } = res;
-      this.softwaresNames = data.softwares
-        .map((s: any) => {
-          return { name: s.name, type: s.type };
-        })
-        .filter((s: ISoftwareSearch) => !groupSoftwareName.includes(s.name))
-        .reverse();
-    });
+    axios
+      .get("/api/software/list", {
+        headers: {
+          authorization: `Bearer ${this.$store.state.token}`,
+        },
+      })
+      .then((res) => {
+        let { data } = res;
+        this.softwaresNames = data.softwares
+          .map((s: any) => {
+            return { name: s.name, type: s.type };
+          })
+          .filter((s: ISoftwareSearch) => !groupSoftwareName.includes(s.name))
+          .reverse();
+      });
   }
 
   @Watch("software")
@@ -166,11 +242,47 @@ export default class SoftwareEdit extends Vue {
   }
 
   addSoftware() {
+    if(typeof(this.softwareSelected) == 'string'){
+
+      if(this.softwareSelected.indexOf('github:') == 0){
+        let softwareName = this.softwareSelected.substring(7);
+
+        axios.post('/api/software/add/github', {
+          repo: softwareName
+        }, {
+          headers: {
+            authorization: `Bearer ${this.$store.state.token}`,
+            "Content-Type": "application/json",
+          }
+        }).then(res => {
+          let {data} = res;
+          debugger;
+          if(data.ok){
+            let s = data.software;
+            this.registerSoftware(s.name);
+          }else{
+            //todo : Handle error
+          }
+        })
+      }else{
+        //TODO Handle ?
+      }
+
+      return;
+    }else{
+      this.registerSoftware((this.softwareSelected as ISoftware).name!)
+    }
+
+    
+  }
+
+  registerSoftware(name: string){
+    debugger;
     axios
       .post(
         `/api/user/group/${this.group.id}/software/add`,
         {
-          name: this.softwareSelected!,
+          name,
         },
         {
           headers: {
@@ -238,6 +350,12 @@ export default class SoftwareEdit extends Vue {
 
   get softwareVersions() {
     return this.dbSoftware?.versions?.reverse() || [];
+  }
+
+  get addBtnDisabled(){
+    if(this.softwareSelected == null) return true;
+    if(typeof(this.softwareSelected) === 'string' && this.softwareSelected.indexOf('github:') != 0) return true;
+    return false;
   }
 
   close() {

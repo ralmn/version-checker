@@ -10,5 +10,5 @@ const jwt = _jwt({ secret: config.auth.jwt_secret, algorithms: ['HS256'] });
 export const apiRouter = Router();
 
 apiRouter.use('/auth', authRouter);
-apiRouter.use('/software', softwareRouter);
+apiRouter.use('/software', jwt, softwareRouter);
 apiRouter.use('/user', jwt, userRouter)
