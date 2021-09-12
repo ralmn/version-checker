@@ -1,0 +1,3 @@
+#!/bin/bash
+
+yarn typeorm migration:show || yarn typeorm migration:run ; yarn ts-node src/checker.ts

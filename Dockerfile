@@ -23,10 +23,15 @@ FROM node
 WORKDIR /app
 
 COPY package.json package-lock.json tsconfig.json yarn.lock ormconfig.json /app/
+COPY ./scripts /app/scripts
+
+RUN chmod +x /app/scripts/*
 
 RUN yarn install --production
 COPY ./src /app/src
 COPY --from=buildFront /build/front/dist /app/front
 
 
-CMD yarn typeorm migration:show || yarn typeorm migration:run ; yarn ts-node .
+ENV PATH /app/scripts:$PATH
+
+CMD start
