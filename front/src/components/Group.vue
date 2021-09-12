@@ -74,7 +74,7 @@
     <SoftwareEdit
       v-if="softwareEdit"
       v-model="softwareEdit"
-      :group="group"
+      :group="_group"
       @close="softwareEdit = null"
       @update="updateFromSoftwareEdit"
     />
