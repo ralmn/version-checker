@@ -1,10 +1,9 @@
 import axios from "axios";
-import { type } from "os";
 import { GithubSoftware } from "../entity/Githubsoftware";
 import { sortVersion } from "../utils";
 import * as semver from "semver";
 import { IScanner } from "./IScanner";
-import { ifError } from "assert";
+
 
 const RATELIMIT_MINIMUM = 20;
 const DISABLED = false;
@@ -51,13 +50,13 @@ export class GithubScanner implements IScanner<GithubSoftware> {
             //console.log(data);
             let versions = (data as any[])
                 .map(release => software.useReleaseTag ? release.tag_name : release.name)
-                .map(v => semver.clean(v))
+                .map(v => semver.coerce(v).format())
                 .filter(e => e != '' && e != null);
 
             let forLatest = (data as any[])
                 .filter(e => e.prerelease == false && e.draft == false)
                 .map(release => software.useReleaseTag ? release.tag_name : release.name)
-                .map(v => semver.clean(v))
+                .map(v => semver.coerce(v).format())
                 .filter(e => e != '' && e != null)
                 .sort(sortVersion)
                 .reverse();
