@@ -26,7 +26,7 @@
             <v-col>
               <v-combobox
                 label="Version"
-                :items="dbSoftware.versions"
+                :items="softwareVersions"
                 v-model="currentVersion"
               ></v-combobox>
             </v-col>
@@ -92,7 +92,7 @@
 <script lang="ts">
 import Vue from "vue";
 import axios from "axios";
-import { Component, Model, Prop } from "vue-property-decorator";
+import { Component, Model, Prop, Watch } from "vue-property-decorator";
 import { IGroup, ISoftware } from "../object/IGroup";
 
 interface ISoftwareSearch {
@@ -108,9 +108,27 @@ export default class SoftwareEdit extends Vue {
 
   private softwaresNames: ISoftwareSearch[] = [];
   private softwareSelected: string | null = null;
-  private currentVersion : string = null;
+  private currentVersion : string | null = null;
 
   mounted() {
+
+    this.initSoftware();
+
+    let groupSoftwareName = this.group.softwares.map((s) => s.name);
+
+    axios.get("/api/software/list").then((res) => {
+      let { data } = res;
+      this.softwaresNames = data.softwares
+        .map((s: any) => {
+          return { name: s.name, type: s.type };
+        })
+        .filter((s: ISoftwareSearch) => !groupSoftwareName.includes(s.name))
+        .reverse();
+    });
+  }
+
+  @Watch('software')
+  initSoftware(){
     if (this.software != null && this.software.name != null) {
       //call server
 
@@ -134,19 +152,9 @@ export default class SoftwareEdit extends Vue {
             groupVersion: gv.version,
           };
           this.dbSoftware = software;
+          this.currentVersion = software.groupVersion || null;
         });
     }
-
-    let groupSoftwareName = this.group.softwares.map((s) => s.name);
-
-    axios.get("/api/software/list").then((res) => {
-      let { data } = res;
-      this.softwaresNames = data.softwares
-        .map((s: any) => {
-          return { name: s.name, type: s.type };
-        })
-        .filter((s: ISoftwareSearch) => !groupSoftwareName.includes(s.name));
-    });
   }
 
   searchNameValue(value: ISoftwareSearch) {
@@ -191,7 +199,7 @@ export default class SoftwareEdit extends Vue {
   saveSoftware(){
     axios
       .post(
-        `/api/user/group/${this.group.id}/software/${this.dbSoftware.name}/version`,
+        `/api/user/group/${this.group.id}/software/${this.dbSoftware!.name}/version`,
         {
           version: this.currentVersion!,
         },
@@ -206,7 +214,6 @@ export default class SoftwareEdit extends Vue {
         const { data } = res;
         if (data.ok) {
           let gv = data.gv;
-          console.log(gv);
           let software: ISoftware = {
             name: gv.software.name,
             type: gv.software.type,
@@ -214,12 +221,20 @@ export default class SoftwareEdit extends Vue {
             latestVersion: gv.software.latestVersion,
             groupVersion: gv.version,
           };
-          this.$emit("update:software", software);
+          //this.$emit("update:software", software);
+          this.$emit('update', software);
           this.dbSoftware = software;
-          console.log(software);
-          window.location.reload();
+          this.close();
+        }else{
+          console.log(data);
         }
+      }).catch(err => {
+        console.log(err);
       });
+  }
+
+  get softwareVersions(){
+    return this.dbSoftware?.versions?.reverse() || []
   }
 
   close() {

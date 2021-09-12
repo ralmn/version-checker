@@ -50,7 +50,7 @@
           <v-container v-else-if="selectedGroup == null">
             <p>Please select your first group</p>
           </v-container>
-          <Group v-else :group="selectedGroup" />
+          <Group v-else v-model="selectedGroup" @update="groupEdited" />
           <!--  -->
         </v-sheet>
       </v-col>
@@ -121,6 +121,10 @@ export default class Dashboard extends Vue {
 
   selectGroup(group: IGroup) {
     this.selectedGroup = group;
+  }
+
+  groupEdited(){
+    this.$forceUpdate();
   }
 
   countSoftwareNotUpdated(group: IGroup) {

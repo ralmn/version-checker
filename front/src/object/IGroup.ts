@@ -22,5 +22,9 @@ export interface ISoftware {
 }
 
 export function softwareIsUpdated(software: ISoftware) {
-    return semver.gt(software.groupVersion!, software.latestVersion!);
+    if(software.groupVersion && software.latestVersion){
+        return semver.compare(software.groupVersion!, software.latestVersion!) >= 0;
+    }else{
+        return true;
+    }
   }
