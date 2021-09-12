@@ -1,5 +1,5 @@
 <template>
-  <v-dialog origin="top center" ref="dialog" :value="software != null">
+  <v-dialog origin="top center" ref="dialog" :value="software != null" @click:outside="close" >
     <v-card>
       <v-card-title v-if="dbSoftware != null"
         >Edit software <v-spacer></v-spacer>
