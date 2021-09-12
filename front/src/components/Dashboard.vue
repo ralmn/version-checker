@@ -38,7 +38,7 @@
       <v-col>
         <v-sheet min-height="70vh" rounded="lg">
           <v-container v-if="groups.length == 0">
-            <p>Frist step : create your first group</p>
+            <p>First step : create your first group</p>
           </v-container>
           <v-container v-else-if="selectedGroup == null">
             <p>Please select your first group</p>
