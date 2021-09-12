@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="2">
+      <v-col cols="auto">
         <v-sheet rounded="lg">
           <v-list color="transparent">
             <v-list-item v-if="groups.length == 0">
@@ -9,9 +9,23 @@
                 <v-list-item-title>No groups</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item v-for="n in groups" :key="n.id" link @click="selectGroup(n)">
+            <v-list-item
+              v-for="n in groups"
+              :key="n.id"
+              link
+              @click="selectGroup(n)"
+            >
               <v-list-item-content>
-                <v-list-item-title>{{ n.name }}</v-list-item-title>
+                <v-list-item-title>
+                  <v-badge
+                    color="orange"
+                    :value="countSoftwareNotUpdated(n)"
+                    :content="countSoftwareNotUpdated(n)"
+                    label="Updates available"
+                    bordered
+                    >{{ n.name }}
+                  </v-badge>
+                </v-list-item-title>
               </v-list-item-content>
             </v-list-item>
 
@@ -48,7 +62,10 @@
 import axios from "axios";
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { IGroup } from "../object/IGroup";
+import {
+  IGroup,
+  softwareIsUpdated as _softwareIsUpdated,
+} from "../object/IGroup";
 import Group from "../components/Group.vue";
 
 @Component({
@@ -67,7 +84,7 @@ export default class Dashboard extends Vue {
       })
       .then((res) => {
         const { data } = res;
-        this.groups = data.data.map((gm : any) => {
+        this.groups = data.data.map((gm: any) => {
           return {
             id: gm.group.id,
             name: gm.group.name,
@@ -102,8 +119,12 @@ export default class Dashboard extends Vue {
       });
   }
 
-  selectGroup(group: IGroup){
+  selectGroup(group: IGroup) {
     this.selectedGroup = group;
+  }
+
+  countSoftwareNotUpdated(group: IGroup) {
+    return group.softwares.filter((s) => s.groupVersion && !_softwareIsUpdated(s)).length;
   }
 }
 </script>
