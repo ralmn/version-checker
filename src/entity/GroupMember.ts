@@ -11,10 +11,10 @@ export enum GroupMemberRole {
 @Entity()
 export class GroupMember {
 
-    @ManyToOne(() => Group, group => group.members ,{primary: true})
+    @ManyToOne(() => Group, group => group.members ,{primary: true, onDelete: "RESTRICT", onUpdate: "RESTRICT"})
     group: Group;
 
-    @ManyToOne(() => User, {primary: true})
+    @ManyToOne(() => User, {primary: true, onDelete: "RESTRICT", onUpdate: "RESTRICT"})
     user: User;
 
     @Column()
