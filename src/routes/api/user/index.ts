@@ -8,7 +8,7 @@ import { createGroup } from "./createGroup";
 
 export const userRouter = Router();
 
-let regexName = "([a-zA-Z\- _%]+/[a-zA-Z\- _%]+)";
+let regexName = "([a-zA-Z0-9\- _%]+/[a-zA-Z0-9\-\\. _%]+)";
 
 userRouter.get('/profile', profile);
 userRouter.get('/groups', groups);
