@@ -10,7 +10,7 @@ async function main() {
     let softs = await repository
         .createQueryBuilder()
         .select()
-        .addOrderBy('updatedAt', "DESC", 'NULLS FIRST')
+        .addOrderBy('Software.updatedAt', "DESC", 'NULLS FIRST')
         .getMany();
 
     console.log(softs);
