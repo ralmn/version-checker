@@ -12,6 +12,10 @@ export class GithubSoftware extends Software {
     useReleaseTag: boolean = true;
 
 
+    @Column({default: false, nullable: false})
+    scanTags: boolean = false;
+
+
     async scanVersions(){
         return await new GithubScanner().scanVersions(this);
     }
