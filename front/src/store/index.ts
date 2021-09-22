@@ -18,6 +18,11 @@ export default new Vuex.Store({
       state.user = decoded;
       localStorage.setItem("token", token);
     },
+    logout: (state) => {
+      state.token = null;
+      state.token_expire_at = null;
+      state.user = null;
+    }
   },
   getters: {
     isLogged: (state: any) => {

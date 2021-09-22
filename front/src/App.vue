@@ -14,6 +14,10 @@
       <v-btn to="/login" text v-if="!isLogged">
         <span class="mr-2">Login</span>
       </v-btn>
+
+      <v-btn @click="logout" text v-if="isLogged">
+        <span class="mr-2">Logout</span>
+      </v-btn>
     </v-app-bar>
 
     <v-main class="grey lighten-4">
@@ -46,6 +50,10 @@ export default class App extends Vue {
           this.$store.commit("setToken", tokenLS);
         });
     }
+  }
+
+  logout(){
+    this.$store.commit('logout');
   }
 
   @Watch("$store.state")
