@@ -21,7 +21,9 @@ export interface ISoftware {
 }
 
 export enum Role {
-  ADMIN = 0, EDITOR = 1, VIEWER = 2
+  ADMIN = 0,
+  EDITOR = 1,
+  VIEWER = 2,
 }
 
 export interface IMember {

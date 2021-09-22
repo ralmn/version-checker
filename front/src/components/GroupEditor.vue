@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" width="500">
+  <v-dialog v-model="dialog" width="500" v-if="iAmAllowed">
     <template v-slot:activator="{ on, attrs }">
       <v-btn icon v-bind="attrs" v-on="on" @click="open">
         <v-icon>mdi-pencil</v-icon>
@@ -11,6 +11,11 @@
 
       <v-card-text>
         <v-container>
+          <v-row v-if="errorMessage">
+            <v-col cols="12">
+              <v-alert type="error">{{errorMessage}}</v-alert>
+            </v-col>
+          </v-row>
           <v-row>
             <v-col>
               <h2>Members</h2>
@@ -28,7 +33,7 @@
               <v-select
                 @change="updateRole(member)"
                 v-model="member.role"
-                :disabled="member.role == 'admin'"
+                :disabled="member.role == 0"
                 :items="roles" />
             </v-col>
             <v-col>
@@ -78,12 +83,13 @@ export default class GroupEditor extends Vue {
   ];
 
   open() {
-    console.log("open", this.group);
+    this.errorMessage = '';
     // this.group.members = [
     //   { user: { username: "user 1", email: "u1@test.com" }, role: "admin" },
     //   { user: { username: "user 2", email: "u2@test.com" }, role: "editor" },
     //   { user: { username: "user 3", email: "u3@test.com" }, role: "viewer" },
     // ];
+    this.group.members = this.group.members.sort((m1, m2) => m1.role - m2.role);
   }
 
   updateRole(member: IMember) {
@@ -109,9 +115,8 @@ export default class GroupEditor extends Vue {
           this.errorMessage = data.error;
         }
       })
-      .catch((res) => {
-        console.log(res);
-        this.errorMessage = res.data.error;
+      .catch((err) => {
+        this.errorMessage = err.response.data.error;
       });
   }
 
@@ -137,10 +142,17 @@ export default class GroupEditor extends Vue {
           this.errorMessage = data.error;
         }
       })
-      .catch((res) => {
-        console.log(res);
-        this.errorMessage = res.data.error;
+      .catch((err) => {
+        this.errorMessage = err.response.data.error;
       });
+  }
+
+  get iAmAllowed() : boolean{
+    let m = this.group.members.find(m => m.user.id == this.$store.state.user.id);
+    if(m){
+      return m.role == Role.ADMIN;
+    }
+    return true;
   }
 
 }
