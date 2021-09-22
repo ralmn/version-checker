@@ -1,8 +1,11 @@
 <template>
   <v-container>
     <v-row>
-      <v-col>
+      <v-col cols="auto" class="mr-auto">
         <h1>{{ group.name }}</h1>
+      </v-col>
+      <v-col cols="auto" >
+        <GroupEditor :group="group" />
       </v-col>
     </v-row>
     <v-row>
@@ -103,9 +106,10 @@ import {
   softwareIsUpdated as _softwareIsUpdated,
 } from "../object/IGroup";
 import SoftwareEdit from "./SoftwareEdit.vue";
+import GroupEditor from "./GroupEditor.vue";
 
 @Component({
-  components: { SoftwareEdit },
+  components: { SoftwareEdit, GroupEditor },
 })
 export default class Group extends Vue {
   @ModelSync("_group", "update") group!: IGroup;

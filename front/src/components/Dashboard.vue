@@ -94,6 +94,7 @@ export default class Dashboard extends Vue {
                 groupVersion: v.version,
               };
             }),
+            members: gm.group.members || []
           };
         });
         if (this.groups.length) {

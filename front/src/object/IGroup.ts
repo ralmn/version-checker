@@ -4,6 +4,7 @@ export interface IGroup {
   id: number;
   name: string;
   softwares: ISoftware[];
+  members: IMember[];
 }
 
 export enum SoftwareType {
@@ -17,6 +18,21 @@ export interface ISoftware {
   versions?: string[];
   latestVersion?: string;
   groupVersion?: string;
+}
+
+export enum Role {
+  ADMIN = 0, EDITOR = 1, VIEWER = 2
+}
+
+export interface IMember {
+  user: IUser;
+  role: Role;
+}
+
+export interface IUser {
+  id: number;
+  username: string;
+  email: string;
 }
 
 export function softwareIsUpdated(software: ISoftware) {

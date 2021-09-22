@@ -6,7 +6,7 @@ import { IScanner } from "./IScanner";
 
 
 const RATELIMIT_MINIMUM = 20;
-const DISABLED = false;
+const DISABLED = true;
 
 let reaming: number = null;
 let nextReset: Date = null;

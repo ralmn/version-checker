@@ -5,6 +5,9 @@ import { groupSoftware } from "./groupSoftware";
 import { addSoftware } from "./addSoftware";
 import { setVersion } from "./setVersion";
 import { createGroup } from "./createGroup";
+import { addMember } from "./addMember";
+import { editMember } from "./editMember";
+import { removeMember } from "./removeMember";
 
 export const userRouter = Router();
 
@@ -18,3 +21,6 @@ userRouter.post('/group/add', createGroup);
 userRouter.post('/group/:gId/software/:name/version', setVersion);
 userRouter.post(`/group/:gId/software/:name${regexName}/version`, setVersion);
 userRouter.post('/group/:gId/software/add', addSoftware);
+userRouter.put(`/group/:gId/members/add`, addMember);
+userRouter.post(`/group/:gId/members/edit`, editMember);
+userRouter.delete(`/group/:gId/members/remove/:uId`, removeMember);

@@ -5,7 +5,7 @@ import { User } from "./User";
 
 
 export enum GroupMemberRole {
-    ADMIN, EDITOR, VIEWER
+    ADMIN = 0, EDITOR = 1, VIEWER = 2
 }
 
 @Entity()
