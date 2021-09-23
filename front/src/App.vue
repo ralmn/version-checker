@@ -27,7 +27,7 @@
     </v-main>
     <v-footer app>
       By ralmn - 2021 -
-      <v-btn icon href="https://github.com/ralmn/versionchecker" target="_blank">
+      <v-btn icon href="https://github.com/ralmn/version-checker" target="_blank">
         <v-icon>mdi-github</v-icon>
       </v-btn>
       <v-btn icon href="https://twitter.com/ralmn45" target="_blank">
