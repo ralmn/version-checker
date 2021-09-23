@@ -73,7 +73,7 @@
                     <v-icon v-if="data.item.indexOf('github:') === 0">
                       mdi-plus
                     </v-icon>
-                    {{data.item}}
+                    {{ data.item }}
                   </span>
                   <span v-else>
                     <v-icon v-if="data.item.type == 'GithubSoftware'">
@@ -81,7 +81,6 @@
                     </v-icon>
                     {{ data.item.name }}
                   </span>
-                  
                 </template>
                 <template v-slot:no-data>
                   <v-list-item>
@@ -124,28 +123,26 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-row>
-              <v-col>
-                <p>Missing your software ?</p>
-                <ul>
-                  <li>
-                    Your software use github release ? register him with type
-                    <code>
-                      github:&lt;github user&gt;/&lt;github repository&gt;
-                    </code>
-                  </li>
-                  <li>
-                    Else, you can request an integration on
-                    <a
-                      target="_blank"
-                      href="https://github.com/ralmn/version-checker">
-                      Version Checker's github repository
-                    </a>
-                    (create an issue)
-                  </li>
-                </ul>
-              </v-col>
-            </v-row>
+            <v-col cols="12">
+              <p>Missing your software ?</p>
+              <ul>
+                <li>
+                  Your software use github release ? register him with type
+                  <code>
+                    github:&lt;github user&gt;/&lt;github repository&gt;
+                  </code>
+                </li>
+                <li>
+                  Else, you can request an integration on
+                  <a
+                    target="_blank"
+                    href="https://github.com/ralmn/version-checker">
+                    Version Checker's github repository
+                  </a>
+                  (create an issue)
+                </li>
+              </ul>
+            </v-col>
           </v-row>
           <v-row>
             <v-col>
@@ -181,7 +178,7 @@ export default class SoftwareEdit extends Vue {
   @Prop({ required: true }) group!: IGroup;
 
   private softwaresNames: ISoftwareSearch[] = [];
-  private softwareSelected: string | ISoftware  | null = null;
+  private softwareSelected: string | ISoftware | null = null;
   private currentVersion: string | null = null;
   private searchSoftware: string | null = null;
 
@@ -242,41 +239,44 @@ export default class SoftwareEdit extends Vue {
   }
 
   addSoftware() {
-    if(typeof(this.softwareSelected) == 'string'){
-
-      if(this.softwareSelected.indexOf('github:') == 0){
+    if (typeof this.softwareSelected == "string") {
+      if (this.softwareSelected.indexOf("github:") == 0) {
         let softwareName = this.softwareSelected.substring(7);
 
-        axios.post('/api/software/add/github', {
-          repo: softwareName
-        }, {
-          headers: {
-            authorization: `Bearer ${this.$store.state.token}`,
-            "Content-Type": "application/json",
-          }
-        }).then(res => {
-          let {data} = res;
-          debugger;
-          if(data.ok){
-            let s = data.software;
-            this.registerSoftware(s.name);
-          }else{
-            //todo : Handle error
-          }
-        })
-      }else{
+        axios
+          .post(
+            "/api/software/add/github",
+            {
+              repo: softwareName,
+            },
+            {
+              headers: {
+                authorization: `Bearer ${this.$store.state.token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((res) => {
+            let { data } = res;
+            debugger;
+            if (data.ok) {
+              let s = data.software;
+              this.registerSoftware(s.name);
+            } else {
+              //todo : Handle error
+            }
+          });
+      } else {
         //TODO Handle ?
       }
 
       return;
-    }else{
-      this.registerSoftware((this.softwareSelected as ISoftware).name!)
+    } else {
+      this.registerSoftware((this.softwareSelected as ISoftware).name!);
     }
-
-    
   }
 
-  registerSoftware(name: string){
+  registerSoftware(name: string) {
     debugger;
     axios
       .post(
@@ -352,9 +352,13 @@ export default class SoftwareEdit extends Vue {
     return this.dbSoftware?.versions?.reverse() || [];
   }
 
-  get addBtnDisabled(){
-    if(this.softwareSelected == null) return true;
-    if(typeof(this.softwareSelected) === 'string' && this.softwareSelected.indexOf('github:') != 0) return true;
+  get addBtnDisabled() {
+    if (this.softwareSelected == null) return true;
+    if (
+      typeof this.softwareSelected === "string" &&
+      this.softwareSelected.indexOf("github:") != 0
+    )
+      return true;
     return false;
   }
 
