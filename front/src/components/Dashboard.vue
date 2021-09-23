@@ -17,11 +17,13 @@
               <v-list-item-content>
                 <v-list-item-title>
                   <v-badge
+                  class="badgeList"
                     color="orange"
-                    :value="countSoftwareNotUpdated(n)"
+                    :value="countSoftwareNotUpdated(n) > 0"
                     :content="countSoftwareNotUpdated(n)"
                     label="Updates available"
-                    bordered>
+                    bordered
+                    >
                     {{ n.name }}
                   </v-badge>
                 </v-list-item-title>
@@ -125,10 +127,10 @@ export default class Dashboard extends Vue {
     this.$forceUpdate();
   }
 
-  countSoftwareNotUpdated(group: IGroup) {
+  countSoftwareNotUpdated(group: IGroup) : number {
     return group.softwares.filter(
       (s) => s.groupVersion && !_softwareIsUpdated(s)
-    ).length;
+    ).length || 0;
   }
 
   groupCreated() {
@@ -137,4 +139,8 @@ export default class Dashboard extends Vue {
 }
 </script>
 
-<style></style>
+<style>
+.badgeList {
+  margin-right: 16px;
+}
+</style>
