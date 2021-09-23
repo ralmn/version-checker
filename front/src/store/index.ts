@@ -22,6 +22,7 @@ export default new Vuex.Store({
       state.token = null;
       state.token_expire_at = null;
       state.user = null;
+      localStorage.setItem("token", "");
     }
   },
   getters: {
