@@ -28,7 +28,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="4">
+      <v-col md="4" sm="12">
         <v-sheet>
           <v-container>
             <v-row align="center">
@@ -45,7 +45,7 @@
           </v-container>
         </v-sheet>
       </v-col>
-      <v-col cols="4">
+      <v-col md="4"  sm="12">
         <v-sheet>
           <v-container>
             <v-row>
@@ -63,7 +63,7 @@
           </v-container>
         </v-sheet>
       </v-col>
-      <v-col cols="4">
+      <v-col md="4"  sm="12">
         <v-sheet>
           <v-container>
             <v-row align="center">
