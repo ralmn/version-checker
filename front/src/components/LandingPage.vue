@@ -37,7 +37,7 @@
               </v-col>
               <v-col cols="6">
                 <p>
-                  A kubernetes cluser? A development server? You can add
+                  A kubernetes cluster? A development server? You can add
                   multiple software groups.
                 </p>
               </v-col>
