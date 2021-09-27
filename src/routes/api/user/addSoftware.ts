@@ -1,6 +1,6 @@
 import { getConnection, GridFSBucket } from "typeorm";
 import { Group } from "../../../entity/Group";
-import { GroupMember } from "../../../entity/GroupMember";
+import { GroupMember, GroupMemberRole } from "../../../entity/GroupMember";
 import { GroupVersion } from "../../../entity/GroupVersion";
 import { Software } from "../../../entity/Software";
 
@@ -18,7 +18,11 @@ export async function addSoftware(req, res) {
 
     if (gm == null) {
         res.status(403);
-        res.json({ ok: false, error: 'Your a not in this group' })
+        res.json({ ok: false, error: 'You are not in this group' })
+        return;
+    }else if(gm.role > GroupMemberRole.EDITOR) {
+        res.status(403);
+        res.json({ ok: false, error: 'You are not allowed to add software in this group' })
         return;
     }
 

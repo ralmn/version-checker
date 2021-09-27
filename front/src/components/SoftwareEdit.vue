@@ -17,6 +17,11 @@
       </v-card-title>
       <div v-if="dbSoftware != null">
         <v-container>
+          <v-row v-if="errorMessage">
+            <v-col cols="12">
+              <v-alert type="error">{{ errorMessage }}</v-alert>
+            </v-col>
+          </v-row>
           <v-row>
             <v-col>
               <h2>
@@ -49,6 +54,11 @@
       </div>
       <div v-else>
         <v-container>
+          <v-row v-if="errorMessage">
+            <v-col cols="12">
+              <v-alert type="error">{{ errorMessage }}</v-alert>
+            </v-col>
+          </v-row>
           <v-row>
             <v-col>
               <h2>Select software</h2>
@@ -182,6 +192,8 @@ export default class SoftwareEdit extends Vue {
   private currentVersion: string | null = null;
   private searchSoftware: string | null = null;
 
+  private errorMessage = "";
+
   mounted() {
     this.initSoftware();
 
@@ -206,6 +218,7 @@ export default class SoftwareEdit extends Vue {
 
   @Watch("software")
   initSoftware() {
+    this.errorMessage = "";
     if (this.software != null && this.software.name != null) {
       //call server
 
@@ -262,8 +275,11 @@ export default class SoftwareEdit extends Vue {
               let s = data.software;
               this.registerSoftware(s.name);
             } else {
-              //todo : Handle error
+              this.errorMessage = data.error;
             }
+          })
+          .catch((e) => {
+            this.errorMessage = e.response.data.error;
           });
       } else {
         //TODO Handle ?
@@ -303,6 +319,9 @@ export default class SoftwareEdit extends Vue {
           this.$emit("update:software", software);
           this.dbSoftware = software;
         }
+      })
+      .catch((e) => {
+        this.errorMessage = e.response.data.error;
       });
   }
 
@@ -342,7 +361,8 @@ export default class SoftwareEdit extends Vue {
         }
       })
       .catch((err) => {
-        // TODO : handle error
+        console.log(err, err.response)
+        this.errorMessage = err.response.data.error;
       });
   }
 

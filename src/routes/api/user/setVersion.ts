@@ -1,12 +1,10 @@
 import { getConnection } from "typeorm";
+import { GroupMemberRole } from "../../../entity/GroupMember";
 import { GroupVersion } from "../../../entity/GroupVersion";
 
 export async function setVersion(req, res) {
 
     let gvRepo = getConnection().getRepository(GroupVersion);
-
-
-    console.log(req.params, req.user);
 
     let data = await gvRepo
         .createQueryBuilder('gv')
@@ -15,14 +13,19 @@ export async function setVersion(req, res) {
         .innerJoinAndSelect('group.members', 'members')
         .innerJoinAndSelect('members.user', 'user', 'user.id = :uid', { uid: req.user.id })
         .where('software.name = :name', { name: req.params.name })
-
         .getOne();
-
 
     if (data == null) {
         res.status(404);
         res.json({ ok: false, error: "No software found for this group" });
     } else {
+
+        let currentMember = data.group.members.find(m => m.user.id == req.user.id);
+        if(currentMember.role > GroupMemberRole.EDITOR) {
+            res.status(403);
+            res.json({ok: true, error: "You are not allowed to edit this software version"});
+            return;
+        }
 
         data.version = req.body.version;
 
