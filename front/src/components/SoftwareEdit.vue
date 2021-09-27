@@ -258,7 +258,6 @@ export default class SoftwareEdit extends Vue {
           )
           .then((res) => {
             let { data } = res;
-            debugger;
             if (data.ok) {
               let s = data.software;
               this.registerSoftware(s.name);
@@ -277,7 +276,6 @@ export default class SoftwareEdit extends Vue {
   }
 
   registerSoftware(name: string) {
-    debugger;
     axios
       .post(
         `/api/user/group/${this.group.id}/software/add`,

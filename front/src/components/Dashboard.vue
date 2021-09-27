@@ -58,6 +58,7 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import {
   IGroup,
+  Role,
   softwareIsUpdated as _softwareIsUpdated,
 } from "../object/IGroup";
 import Group from "./Group.vue";
@@ -96,8 +97,9 @@ export default class Dashboard extends Vue {
                 groupVersion: v.version,
               };
             }),
-            members: gm.group.members || []
-          };
+            members: gm.group.members || [],
+            yourRole: gm.role as Role || null
+          } as IGroup;
         });
         if (this.groups.length) {
           if (this.selectedGroup == null) {

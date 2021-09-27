@@ -5,6 +5,7 @@ export interface IGroup {
   name: string;
   softwares: ISoftware[];
   members: IMember[];
+  yourRole?: Role;
 }
 
 export enum SoftwareType {

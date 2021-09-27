@@ -36,7 +36,7 @@
             </v-chip>
           </v-col>
           <v-col cols="auto" order="-1">
-            <v-tooltip bottom>
+            <v-tooltip bottom v-if="group.yourRole <= 1">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   icon
@@ -62,7 +62,7 @@
       </v-container>
     </v-row>
 
-    <v-tooltip top>
+    <v-tooltip top v-if="group.yourRole <= 1">
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           elevation="2"
