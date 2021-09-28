@@ -11,7 +11,7 @@
     <v-row>
       <v-col></v-col>
     </v-row>
-    <v-row v-for="soft in group.softwares" :key="soft.name">
+    <v-row v-for="soft in orderedSoftware" :key="soft.name">
       <v-container>
         <v-row>
           <v-col
@@ -126,6 +126,17 @@ export default class Group extends Vue {
 
   editSoftware(soft: ISoftware) {
     this.softwareEdit = soft;
+  }
+
+
+  get orderedSoftware(): ISoftware[] {
+    return this.group.softwares.sort((a, b) => {
+      if(this.softwareIsUpdated(a) != this.softwareIsUpdated(b)){
+        return this.softwareIsUpdated(a) ? 1 : -1;
+      }
+
+      return a.name!.localeCompare(b.name!);
+    })
   }
 
   updateFromSoftwareEdit(software: ISoftware) {
