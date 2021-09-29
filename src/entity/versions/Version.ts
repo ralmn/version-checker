@@ -1,10 +1,12 @@
 import { Column, Entity, ManyToOne, TableInheritance } from "typeorm";
 import { Software } from "../Software";
+import { DefaultVersion } from "./DefaultVersion";
+import { SemVer } from "./SemVer";
 import { VersionType } from "./VersionType";
 
 
 @Entity()
-@TableInheritance({ column: { type: "varchar", name: "versionType", enum: VersionType } })
+@TableInheritance({ column: { type: "varchar", name: "versionType", enum: VersionType } },)
 export abstract class Version {
 
     @ManyToOne(() => Software ,{primary: true, onDelete: "RESTRICT", onUpdate: "RESTRICT"})
@@ -17,7 +19,11 @@ export abstract class Version {
         this.versionRaw = version;
     }
 
-    abstract compare(b:Version): number;
+    //abstract compare(b:Version): number;
+
+    compare( b: Version): number {
+        return this.versionRaw.localeCompare(b.versionRaw);
+    }
 
     toString(){
         return this.versionRaw;

@@ -1,8 +1,9 @@
 import * as semverLib from "semver";
 import { ChildEntity, Column } from "typeorm";
 import { Version } from "./Version";
+import { VersionType } from "./VersionType";
 
-@ChildEntity()
+@ChildEntity(VersionType.SemVer)
 export class SemVer extends Version {
   @Column()
   major: number;

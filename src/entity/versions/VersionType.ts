@@ -1,4 +1,5 @@
+
 export enum VersionType {
-    SemVer = 'SemVer',
-    Default = 'DefaultVersion'
+    SemVer = "SemVer",
+    Default = "DefaultVersion"
 }

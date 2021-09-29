@@ -7,8 +7,8 @@ import { buildVersion } from "../entity/versions/versionsUtils";
 import { Version } from "../entity/versions/Version";
 
 
-const RATELIMIT_MINIMUM = 20;
-const DISABLED = true;
+const RATELIMIT_MINIMUM = 5;
+const DISABLED = false;
 
 let reaming: number = null;
 let nextReset: Date = null;
@@ -89,22 +89,26 @@ export class GithubScanner implements IScanner<GithubSoftware> {
                     .map(v => buildVersion(v, software.versionType))
                     .sort((a, b) => a.compare(b))
                     .reverse();
-                console.log(forLatest);
+                // console.log(forLatest);
             }
             let edited = false;
 
             for (let version of versions) {
-                if (!software.versions.findIndex(v => v.versionRaw == version)) {
-                    software.versions.push(buildVersion(version, software.versionType));
+                if (software.versions.find(v => v.versionRaw == version) == null) {
+                    let ver = buildVersion(version, software.versionType);
+                    software.versions.push(ver);
+                    ver.software = software;
                     edited = true;
                 }
             }
+            
             if (edited) {
                 software.versions = software.versions.sort((a, b) => a.compare(b));
             }
-
+            
             if (forLatest.length && !forLatest[0].equals(software.latestVersion)) {
-                software.latestVersion = forLatest[0];
+                software.latestVersion = software.versions.find(v => v.equals(forLatest[0]));
+                //software.latestVersion.software = software;
                 edited = true;
                 console.log('new latest version');
             }

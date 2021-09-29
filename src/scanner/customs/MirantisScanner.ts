@@ -7,6 +7,7 @@ import * as cheerio from "cheerio";
 import { isJsxOpeningFragment } from "typescript";
 import * as semver from "semver";
 import { buildVersion } from "../../entity/versions/versionsUtils";
+import { SemVer } from "../../entity/versions/SemVer";
 
 const domain = `https://docs.mirantis.com`;
 
@@ -91,8 +92,10 @@ export class MirantisScanner implements IScanner<CustomSoftware> {
 
       for (let v of versions) {
         if (!software.versions.find(vB => vB.versionRaw == v)) {
-          software.versions.push(buildVersion(v, software.versionType));
-          newVersion;
+          const ver = buildVersion(v, software.versionType);
+          ver.software = software;
+          software.versions.push(ver);
+          newVersion = true;
         }
       }
 
