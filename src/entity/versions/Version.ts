@@ -1,7 +1,5 @@
-import { Column, Entity, ManyToOne, TableInheritance } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, TableInheritance } from "typeorm";
 import { Software } from "../Software";
-import { DefaultVersion } from "./DefaultVersion";
-import { SemVer } from "./SemVer";
 import { VersionType } from "./VersionType";
 
 
@@ -14,6 +12,9 @@ export abstract class Version {
 
     @Column({primary: true})
     versionRaw: string;
+    
+    @CreateDateColumn({nullable: false})
+    createdAt: Date;
 
     constructor(version: string){
         this.versionRaw = version;
