@@ -51,6 +51,8 @@ export async function addSoftware(req, res) {
     gv = await gvRepo.createQueryBuilder('gv')
         .innerJoinAndSelect('gv.group', 'group', 'group.id = :gId', { gId: req.params.gId })
         .innerJoinAndSelect('gv.software', 'software', 'software.name = :name', { name: req.body.name })
+        .leftJoinAndSelect('software.versions', 'versions')
+        .leftJoinAndSelect('software.latestVersion', 'latestVersion')
         .getOne()
 
 

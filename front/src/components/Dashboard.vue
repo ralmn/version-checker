@@ -85,13 +85,11 @@ export default class Dashboard extends Vue {
       })
       .then((res) => {
         const { data } = res;
-        console.log('raw', data.data);
         this.groups = data.data.map((gm: any) => {
           return {
             id: gm.group.id,
             name: gm.group.name,
             softwares: gm.group.versions.map((gv: any) => {
-              console.log(gv.latestVersion);
               return new ISoftware({
                 name: gv.software.name,
                 type: gv.software.type,
@@ -104,8 +102,6 @@ export default class Dashboard extends Vue {
             yourRole: gm.role as Role || null
           } as IGroup;
         });
-        console.log('ok? ')
-        console.log(this.groups);
         if (this.groups.length) {
           if (this.selectedGroup == null) {
             this.selectedGroup = this.groups[0];
@@ -135,7 +131,6 @@ export default class Dashboard extends Vue {
   }
 
   countSoftwareNotUpdated(group: IGroup) : number {
-    console.log(group.softwares);
     return group.softwares.filter(
       (s) => s.groupVersion && !s.isUpdated()
     ).length || 0;

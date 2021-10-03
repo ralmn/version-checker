@@ -37,6 +37,7 @@
               <v-combobox
                 label="Version"
                 :items="softwareVersions"
+                item-text="versionRaw"
                 v-model="currentVersion"></v-combobox>
             </v-col>
           </v-row>
@@ -175,6 +176,7 @@ import Vue from "vue";
 import axios from "axios";
 import { Component, Model, Prop, Watch } from "vue-property-decorator";
 import { IGroup, ISoftware } from "../object/IGroup";
+import { castVersionData } from "@/object/Version";
 
 interface ISoftwareSearch {
   name: string;
@@ -194,58 +196,67 @@ export default class SoftwareEdit extends Vue {
 
   private errorMessage = "";
 
-  mounted() {
-    this.initSoftware();
-
+  async mounted() {
+    await this.initSoftware();
     let groupSoftwareName = this.group.softwares.map((s) => s.name);
 
-    axios
-      .get("/api/software/list", {
-        headers: {
-          authorization: `Bearer ${this.$store.state.token}`,
-        },
-      })
-      .then((res) => {
-        let { data } = res;
-        this.softwaresNames = data.softwares
-          .map((s: any) => {
-            return { name: s.name, type: s.type };
-          })
-          .filter((s: ISoftwareSearch) => !groupSoftwareName.includes(s.name))
-          .reverse();
-      });
+    if(this.dbSoftware == null){
+      axios
+        .get("/api/software/list", {
+          headers: {
+            authorization: `Bearer ${this.$store.state.token}`,
+          },
+        })
+        .then((res) => {
+          let { data } = res;
+          this.softwaresNames = data.softwares
+            .map((s: any) => {
+              return { name: s.name, type: s.type };
+            })
+            .filter((s: ISoftwareSearch) => !groupSoftwareName.includes(s.name))
+            .reverse();
+        });
+    }
   }
 
   @Watch("software")
-  initSoftware() {
+  initSoftware() : Promise<void> {
+
+    return new Promise((resolve, reject)=> {
+
     this.errorMessage = "";
     if (this.software != null && this.software.name != null) {
-      //call server
+        axios
+          .get(
+            `/api/user/group/${this.group.id}/software/${this.software.name}`,
+            {
+              headers: {
+                authorization: `Bearer ${this.$store.state.token}`,
+              },
+            }
+          )
+          .then((res) => {
+            let { data } = res;
+            let gv = data.gv;
+            let software = new ISoftware({
+              name: gv.software.name,
+              type: gv.software.type,
+              versions: (gv.software.versions as any[]).map(v => castVersionData(v)),
+              latestVersion: castVersionData(gv.software.latestVersion),
+              groupVersion: castVersionData(gv.version)
+            });
+            this.dbSoftware = software;
+            this.currentVersion = software.groupVersion?.versionRaw || null;
 
-      axios
-        .get(
-          `/api/user/group/${this.group.id}/software/${this.software.name}`,
-          {
-            headers: {
-              authorization: `Bearer ${this.$store.state.token}`,
-            },
-          }
-        )
-        .then((res) => {
-          let { data } = res;
-          let gv = data.gv;
-          let software = new ISoftware({
-            name: gv.software.name,
-            type: gv.software.type,
-            versions: gv.software.versions,
-            latestVersion: gv.software.latestVersion,
-            groupVersion: gv.version,
-            //isUpdated: null
+            resolve();
+          }).catch(e => {
+            reject(e);
           });
-          this.dbSoftware = software;
-          this.currentVersion = software.groupVersion?.versionRaw || null;
-        });
-    }
+      }else{
+        resolve();
+      }
+    });
+
   }
 
   searchNameValue(value: ISoftwareSearch) {
@@ -313,9 +324,9 @@ export default class SoftwareEdit extends Vue {
           let software = new ISoftware({
             name: gv.software.name,
             type: gv.software.type,
-            versions: gv.software.versions,
-            latestVersion: gv.software.latestVersion,
-            groupVersion: gv.version,
+            versions: (gv.software.versions as any[]).map(v => castVersionData(v)),
+            latestVersion: castVersionData(gv.software.latestVersion),
+            groupVersion: castVersionData(gv.version)
           });
           this.$emit("update:software", software);
           this.dbSoftware = software;
@@ -349,9 +360,9 @@ export default class SoftwareEdit extends Vue {
           let software = new ISoftware({
             name: gv.software.name,
             type: gv.software.type,
-            versions: gv.software.versions,
-            latestVersion: gv.software.latestVersion,
-            groupVersion: gv.version,
+            versions: (gv.software.versions as any[]).map(v => castVersionData(v)),
+            latestVersion: castVersionData(gv.software.latestVersion),
+            groupVersion: castVersionData(gv.version)
           });
           //this.$emit("update:software", software);
           this.$emit("update", software);
@@ -368,7 +379,7 @@ export default class SoftwareEdit extends Vue {
   }
 
   get softwareVersions() {
-    return this.dbSoftware?.versions?.reverse() || [];
+    return this.dbSoftware?.versions?.sort((a, b) => a.compare(b)).reverse() || [];
   }
 
   get addBtnDisabled() {
