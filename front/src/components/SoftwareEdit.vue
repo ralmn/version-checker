@@ -234,15 +234,16 @@ export default class SoftwareEdit extends Vue {
         .then((res) => {
           let { data } = res;
           let gv = data.gv;
-          let software: ISoftware = {
+          let software = new ISoftware({
             name: gv.software.name,
             type: gv.software.type,
             versions: gv.software.versions,
             latestVersion: gv.software.latestVersion,
             groupVersion: gv.version,
-          };
+            //isUpdated: null
+          });
           this.dbSoftware = software;
-          this.currentVersion = software.groupVersion || null;
+          this.currentVersion = software.groupVersion?.versionRaw || null;
         });
     }
   }
@@ -309,13 +310,13 @@ export default class SoftwareEdit extends Vue {
         const { data } = res;
         if (data.ok) {
           let gv = data.gv;
-          let software: ISoftware = {
+          let software = new ISoftware({
             name: gv.software.name,
             type: gv.software.type,
             versions: gv.software.versions,
             latestVersion: gv.software.latestVersion,
             groupVersion: gv.version,
-          };
+          });
           this.$emit("update:software", software);
           this.dbSoftware = software;
         }
@@ -345,13 +346,13 @@ export default class SoftwareEdit extends Vue {
         const { data } = res;
         if (data.ok) {
           let gv = data.gv;
-          let software: ISoftware = {
+          let software = new ISoftware({
             name: gv.software.name,
             type: gv.software.type,
             versions: gv.software.versions,
             latestVersion: gv.software.latestVersion,
             groupVersion: gv.version,
-          };
+          });
           //this.$emit("update:software", software);
           this.$emit("update", software);
           this.dbSoftware = software;

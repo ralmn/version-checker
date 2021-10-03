@@ -16,4 +16,13 @@ export class GroupVersion {
     @JoinColumn({name: 'version', referencedColumnName: 'versionRaw'})
     version: Version;
 
+
+    get isUpdated() : boolean {
+        return this.software.latestVersion.compare(this.version) <= 0;
+    }
+
+    set isUpdated(val: boolean) {
+        //nothing
+    }
+
 }

@@ -20,6 +20,10 @@ export abstract class Version {
         this.versionRaw = version;
     }
 
+
+    @Column({name: 'versionType', type: 'varchar'})
+    versionType: VersionType;
+    
     //abstract compare(b:Version): number;
 
     compare( b: Version): number {
