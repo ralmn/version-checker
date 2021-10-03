@@ -1,6 +1,7 @@
-import {Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm";
+import {Entity, JoinColumn, ManyToOne, OneToOne} from "typeorm";
 import { Software } from "./Software";
 import { Group } from "./Group";
+import { Version } from "./versions/Version";
 
 @Entity()
 export class GroupVersion {
@@ -11,7 +12,8 @@ export class GroupVersion {
     @ManyToOne(() => Software, {primary: true, onDelete: "RESTRICT", onUpdate: "RESTRICT"})
     software: Software;
 
-    @Column({nullable: false})
-    version: string;
+    @OneToOne(() => Version, {nullable: false})
+    @JoinColumn({name: 'version', referencedColumnName: 'versionRaw'})
+    version: Version;
 
 }
