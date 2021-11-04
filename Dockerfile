@@ -1,4 +1,4 @@
-FROM node as buildFront
+FROM node:lts as buildFront
 
 WORKDIR /build/front
 
@@ -18,7 +18,7 @@ RUN yarn build
 # COPY ./src /build/src
 # RUN yarn tsc
 
-FROM node
+FROM node:lts
 
 WORKDIR /app
 
