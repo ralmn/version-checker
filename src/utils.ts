@@ -1,4 +1,5 @@
 import * as semver from "semver";
+import { Version } from "./entity/versions/Version";
 
 export function sortVersion(version1: string, version2:string){
 
@@ -6,3 +7,4 @@ export function sortVersion(version1: string, version2:string){
     return semver.lt(version1, version2) ? -1 : 1;
 
 }
+

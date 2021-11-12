@@ -9,6 +9,9 @@ export async function setVersion(req, res) {
     let data = await gvRepo
         .createQueryBuilder('gv')
         .innerJoinAndSelect('gv.software', 'software')
+        .leftJoinAndSelect('gv.version', 'version')
+        .leftJoinAndSelect('software.versions', 'versions')
+        .leftJoinAndSelect('software.latestVersion', 'latestVersion')
         .innerJoinAndSelect('gv.group', 'group', 'group.id = :gid', { gid: req.params.gId })
         .innerJoinAndSelect('group.members', 'members')
         .innerJoinAndSelect('members.user', 'user', 'user.id = :uid', { uid: req.user.id })
@@ -27,7 +30,7 @@ export async function setVersion(req, res) {
             return;
         }
 
-        data.version = req.body.version;
+        data.version = data.software.versions.find(v => v.versionRaw == req.body.version.versionRaw);
 
         data = await gvRepo.save(data);
 

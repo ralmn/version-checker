@@ -58,11 +58,12 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import {
   IGroup,
-  Role,
-  softwareIsUpdated as _softwareIsUpdated,
+  ISoftware,
+  Role
 } from "../object/IGroup";
 import Group from "./Group.vue";
 import CreateGroup from "./CreateGroup.vue";
+import { castVersionData } from "@/object/Version";
 
 @Component({
   components: { Group, CreateGroup },
@@ -88,14 +89,14 @@ export default class Dashboard extends Vue {
           return {
             id: gm.group.id,
             name: gm.group.name,
-            softwares: gm.group.versions.map((v: any) => {
-              return {
-                name: v.software.name,
-                type: v.software.type,
-                versions: v.software.versions,
-                latestVersion: v.software.latestVersion,
-                groupVersion: v.version,
-              };
+            softwares: gm.group.versions.map((gv: any) => {
+              return new ISoftware({
+                name: gv.software.name,
+                type: gv.software.type,
+                versions: (gv.software.versions as any[]).map(v => castVersionData(v)),
+                latestVersion: castVersionData(gv.software.latestVersion),
+                groupVersion: castVersionData(gv.version)
+              });
             }),
             members: gm.group.members || [],
             yourRole: gm.role as Role || null
@@ -131,7 +132,7 @@ export default class Dashboard extends Vue {
 
   countSoftwareNotUpdated(group: IGroup) : number {
     return group.softwares.filter(
-      (s) => s.groupVersion && !_softwareIsUpdated(s)
+      (s) => s.groupVersion && !s.isUpdated()
     ).length || 0;
   }
 

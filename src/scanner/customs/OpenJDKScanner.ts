@@ -1,6 +1,7 @@
 import axios from "axios";
 import { CustomSoftware } from "../../entity/CustomSoftware";
 import { Software } from "../../entity/Software"
+import { buildVersion } from "../../entity/versions/versionsUtils";
 import { sortVersion } from "../../utils";
 import { IScanner } from "../IScanner";
 
@@ -23,19 +24,21 @@ export class OpenJDKScanner implements IScanner<CustomSoftware> {
             });
 
             let versions = (data as any[])
-                .map(release => release.version.semver)
-                .filter(e => e != '' && e != null);
+                .map(release => release.release_name)
+                .filter(e => e != '' && e != null) as string[];
 
             let edited = false;
 
             for (let version of versions) {
-                if (!software.versions.includes(version)) {
-                    software.versions.push(version);
+                if (!software.versions.find(v => v.versionRaw == version)) {
+                    const ver = buildVersion(version, software.versionType);
+                    ver.software = software;
+                    software.versions.push(ver);
                     edited = true;
                 }
             }
             if (edited) {
-                software.versions = software.versions.sort(sortVersion);
+                software.versions = software.versions.sort((a, b) => a.compare(b));
             }
 
 

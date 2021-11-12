@@ -20,7 +20,9 @@
               !(soft.groupVersion && soft.latestVersion) ? 'mr-auto' : ''
             ">
             <h2>
-              <v-icon v-if="soft.type == 'GithubSoftware'">mdi-github</v-icon>
+              <a v-if="soft.type == 'GithubSoftware'" target="_blank" class="githubLink" :href="`https://github.com/${soft.name}`">
+                <v-icon >mdi-github</v-icon>
+              </a>
               {{ soft.name }}
             </h2>
           </v-col>
@@ -28,7 +30,7 @@
             cols="auto"
             class="mr-auto"
             v-if="soft.groupVersion && soft.latestVersion">
-            <v-chip v-if="softwareIsUpdated(soft)" color="green" outlined label>
+            <v-chip v-if="soft.isUpdated()" color="green" outlined label>
               Updated
             </v-chip>
             <v-chip v-else color="orange" outlined label>
@@ -51,8 +53,8 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col>Current version : {{ soft.groupVersion || "Unknowed" }}</v-col>
-          <v-col>Latest version : {{ soft.latestVersion || "Unknowed" }}</v-col>
+          <v-col>Current version : {{ (soft.groupVersion ? soft.groupVersion.versionRaw : null) || "Unknowed" }}</v-col>
+          <v-col>Latest version : {{ (soft.latestVersion? soft.latestVersion.versionRaw : null) || "Unknowed" }}</v-col>
         </v-row>
         <v-row></v-row>
         <v-divider
@@ -95,15 +97,11 @@
 import Vue from "vue";
 import {
   Component,
-  Prop,
-  Model,
-  Watch,
-  ModelSync,
+  ModelSync
 } from "vue-property-decorator";
 import {
   IGroup,
-  ISoftware,
-  softwareIsUpdated as _softwareIsUpdated,
+  ISoftware
 } from "../object/IGroup";
 import SoftwareEdit from "./SoftwareEdit.vue";
 import GroupEditor from "./GroupEditor.vue";
@@ -116,12 +114,8 @@ export default class Group extends Vue {
 
   softwareEdit: ISoftware | null = null;
 
-  softwareIsUpdated(soft: ISoftware) {
-    return _softwareIsUpdated(soft);
-  }
-
   addSoftware() {
-    this.softwareEdit = {};
+    this.softwareEdit = new ISoftware();
   }
 
   editSoftware(soft: ISoftware) {
@@ -131,8 +125,8 @@ export default class Group extends Vue {
 
   get orderedSoftware(): ISoftware[] {
     return this.group.softwares.sort((a, b) => {
-      if(this.softwareIsUpdated(a) != this.softwareIsUpdated(b)){
-        return this.softwareIsUpdated(a) ? 1 : -1;
+      if( a.isUpdated() != b.isUpdated() ){
+        return a.isUpdated() ? 1 : -1;
       }
 
       return a.name!.localeCompare(b.name!);
@@ -155,4 +149,10 @@ export default class Group extends Vue {
 }
 </script>
 
-<style></style>
+<style>
+
+.githubLink {
+  text-decoration: none;
+}
+
+</style>

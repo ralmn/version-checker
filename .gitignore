@@ -6,3 +6,7 @@ tmp/
 temp/
 *.db
 *.log
+dump.sql
+database/
+bugs
+

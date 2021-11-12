@@ -3,9 +3,11 @@ import { GithubSoftware } from "../entity/Githubsoftware";
 import { sortVersion } from "../utils";
 import * as semver from "semver";
 import { IScanner } from "./IScanner";
+import { buildVersion } from "../entity/versions/versionsUtils";
+import { Version } from "../entity/versions/Version";
 
 
-const RATELIMIT_MINIMUM = 20;
+const RATELIMIT_MINIMUM = 5;
 const DISABLED = false;
 
 let reaming: number = null;
@@ -62,7 +64,7 @@ export class GithubScanner implements IScanner<GithubSoftware> {
             //console.log(data);
 
             let versions : string[];
-            let forLatest: string[];
+            let forLatest: Version[];
 
             if(software.scanTags){
                 versions = (data as any[])
@@ -71,7 +73,7 @@ export class GithubScanner implements IScanner<GithubSoftware> {
                     .map(v => parseTagVersion(v))
                     .filter(e => e != '' && e != null);
 
-                forLatest = versions.filter(version => !isPreRelease(version)).sort(sortVersion).reverse();
+                forLatest = versions.filter(version => !isPreRelease(version)).map(v => buildVersion(v, software.versionType)).sort((a, b) => a.compare(b)).reverse();
             }else{
                 versions = (data as any[])
                     .map(release => software.useReleaseTag ? release.tag_name : release.name)
@@ -84,25 +86,29 @@ export class GithubScanner implements IScanner<GithubSoftware> {
                     .map(v => parseTagVersion(v))
                     .filter(e => e != '' && e != null)
                     .filter(version => !isPreRelease(version))
-                    .sort(sortVersion)
+                    .map(v => buildVersion(v, software.versionType))
+                    .sort((a, b) => a.compare(b))
                     .reverse();
-                console.log(forLatest);
+                // console.log(forLatest);
             }
             let edited = false;
 
             for (let version of versions) {
-                if (!software.versions.includes(version)) {
-                    software.versions.push(version);
+                if (software.versions.find(v => v.versionRaw == version) == null) {
+                    let ver = buildVersion(version, software.versionType);
+                    software.versions.push(ver);
+                    ver.software = software;
                     edited = true;
                 }
             }
+            
             if (edited) {
-                software.versions = software.versions.sort(sortVersion);
+                software.versions = software.versions.sort((a, b) => a.compare(b));
             }
-
-
-            if (forLatest.length && forLatest[0] != software.latestVersion) {
-                software.latestVersion = forLatest[0];
+            
+            if (forLatest.length && !forLatest[0].equals(software.latestVersion)) {
+                software.latestVersion = software.versions.find(v => v.equals(forLatest[0]));
+                //software.latestVersion.software = software;
                 edited = true;
                 console.log('new latest version');
             }

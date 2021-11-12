@@ -29,6 +29,8 @@ export async function groupSoftware(req, res){
         .innerJoinAndSelect('gv.group', 'group', 'group.id = :gid', {gid: req.params.gId})
         .innerJoinAndSelect('group.members', 'members')
         .innerJoinAndSelect('members.user', 'user', 'user.id = :uid', {uid: req.user.id})
+        .leftJoinAndSelect('software.versions', 'versions')
+        .leftJoinAndSelect('software.latestVersion', 'latestVersion')
         .where('software.name = :name', {name: req.params.name})
 
         .getOne();

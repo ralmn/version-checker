@@ -1,4 +1,5 @@
 import semver from "semver";
+import { Version } from "./Version";
 
 export interface IGroup {
   id: number;
@@ -13,12 +14,29 @@ export enum SoftwareType {
   CustomSoftware,
 }
 
-export interface ISoftware {
+export class ISoftware {
   name?: string;
   type?: SoftwareType;
-  versions?: string[];
-  latestVersion?: string;
-  groupVersion?: string;
+  versions?: Version[];
+  latestVersion?: Version;
+  groupVersion?: Version;
+
+  constructor(data?: any) {
+    if (data) {
+      if (data.name) this.name = data.name;
+      if (data.type) this.type = data.type;
+      if (data.versions) this.versions = data.versions;
+      if (data.latestVersion) this.latestVersion = data.latestVersion;
+      if (data.groupVersion) this.groupVersion = data.groupVersion;
+    }
+  }
+
+  isUpdated(): boolean {
+    if (this.latestVersion == null || this.groupVersion == null) {
+      return true;
+    }
+    return this.groupVersion.compare(this.latestVersion) >= 0;
+  }
 }
 
 export enum Role {
@@ -36,12 +54,4 @@ export interface IUser {
   id: number;
   username: string;
   email: string;
-}
-
-export function softwareIsUpdated(software: ISoftware) {
-  if (software.groupVersion && software.latestVersion) {
-    return semver.compare(software.groupVersion!, software.latestVersion!) >= 0;
-  } else {
-    return true;
-  }
 }

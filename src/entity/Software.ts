@@ -1,30 +1,23 @@
-import { json } from "stream/consumers";
-import { Entity, Column, PrimaryColumn, TableInheritance, ValueTransformer, CreateDateColumn, UpdateDateColumn } from "typeorm";
-
-class VersionValueTransformer implements ValueTransformer {
-    to(value: any): string{
-        return JSON.stringify(value);
-    };
-    /**
-     * Used to unmarshal data when reading from the database.
-     */
-    from(value: string): any {
-        return JSON.parse(value);
-    }
-}
+import { Entity, Column, PrimaryColumn, TableInheritance, ValueTransformer, CreateDateColumn, UpdateDateColumn, OneToMany, OneToOne, JoinColumn } from "typeorm";
+import { DefaultVersion } from "./versions/DefaultVersion";
+import { buildVersion } from "./versions/versionsUtils";
+import { Version } from "./versions/Version";
+import { VersionType } from "./versions/VersionType";
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
 export abstract class Software {
 
     @PrimaryColumn()
+    @JoinColumn({name: 'name', referencedColumnName:'softwareName'})
     name: string;
 
-    @Column("simple-array", {default: "" } )
-    versions: string[];
+    @OneToMany(() => Version, v => v.software)
+    versions: Version[];
 
-    @Column({nullable: true})
-    latestVersion?: string;
+    @OneToOne(() => Version, {nullable: true})
+    @JoinColumn({name: 'latestVersion', referencedColumnName: 'versionRaw'})
+    latestVersion?: Version;
 
     @CreateDateColumn({nullable: false})
     createdAt: Date;
@@ -34,6 +27,9 @@ export abstract class Software {
 
     @Column()
     type: string;
+
+    @Column({type: 'varchar', enum: VersionType, default: VersionType.Default})
+    versionType: VersionType;
 
     // constructor(name: string){
     //     this.name = name;
@@ -46,7 +42,7 @@ export abstract class Software {
         return this.versions;
     }
     public addVersions(version: string){
-        this.versions.push(version);
+        //this.versions.push(buildVersion(version, this.versionType));
     }
 
     public abstract scanVersions(): Promise<boolean>;

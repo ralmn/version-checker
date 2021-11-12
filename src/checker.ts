@@ -1,16 +1,22 @@
 import { createConnection } from "typeorm";
 import { Software } from "./entity/Software";
+import { Version } from "./entity/versions/Version";
  
 
 async function main() {
     let connection = await createConnection();
 
     let repository = connection.getRepository(Software);
+    let vRepo = connection.getRepository(Version);
 
     let softs = await repository
-        .createQueryBuilder()
+        .createQueryBuilder('s')
         .select()
-        .addOrderBy('Software.updatedAt', "ASC", 'NULLS FIRST')
+        .addOrderBy('s.updatedAt', "ASC", 'NULLS FIRST')
+        .leftJoinAndSelect('s.versions', 'version')
+        .leftJoinAndSelect('version.software', 'vsoft')
+        .leftJoinAndSelect('s.latestVersion', 'latestVersion')
+        .leftJoinAndSelect('latestVersion.software', 'latestVersionSoft')
         .getMany();
 
     console.log(softs);
@@ -25,15 +31,24 @@ async function main() {
         }
     }
     if (toSaves.length > 0) {
-        console.log("Save : ", toSaves.map(e => e.name).join(', '))
-        await repository.save(toSaves);
+        console.log("SAVE Versions");
+        await connection.manager.save(toSaves.flatMap(s => s.versions));
+        console.log("SAVE Software");
+        await connection.manager.save(toSaves);
     } else {
         console.log("No updates");
     }
 
+    await connection.close();
 }
 
-main().then(() => { }).catch((e) => {
+main().then(() => {
+
+ }).catch((e) => {
     console.log('Uncatched error', e);
-})
+});
+
+function listSofts(softs: Software[]) {
+    throw new Error("Function not implemented.");
+}
 
