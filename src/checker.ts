@@ -39,9 +39,16 @@ async function main() {
         console.log("No updates");
     }
 
+    await connection.close();
 }
 
-main().then(() => { }).catch((e) => {
+main().then(() => {
+
+ }).catch((e) => {
     console.log('Uncatched error', e);
-})
+});
+
+function listSofts(softs: Software[]) {
+    throw new Error("Function not implemented.");
+}
 

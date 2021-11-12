@@ -11,6 +11,8 @@ export class VersionObject1632860731780 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
 
+        const driver = queryRunner.connection.driver;
+
         let columnMetadataVersionType = new ColumnMetadata({
             connection: queryRunner.connection,
             entityMetadata: queryRunner.connection.getMetadata(Version),
@@ -33,6 +35,9 @@ export class VersionObject1632860731780 implements MigrationInterface {
                 {name: 'major', type: 'integer', isNullable: true, default: null},
                 {name: 'minor', type: 'integer', isNullable: true, default: null},
                 {name: 'patch', type: 'integer', isNullable: true, default: null},
+                {name: "createdAt", type: driver.mappedDataTypes.createDate.toString(), default: driver.mappedDataTypes.createDateDefault, isNullable: false},
+                {name: "updatedAt", type: driver.mappedDataTypes.updateDate.toString(), default: driver.mappedDataTypes.updateDateDefault, isNullable: true},
+
             ],
             foreignKeys: [
                 {referencedTableName: 'software', columnNames: ['softwareName'], referencedColumnNames: ['name']}
