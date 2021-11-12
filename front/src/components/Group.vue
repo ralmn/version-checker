@@ -20,7 +20,9 @@
               !(soft.groupVersion && soft.latestVersion) ? 'mr-auto' : ''
             ">
             <h2>
-              <v-icon v-if="soft.type == 'GithubSoftware'">mdi-github</v-icon>
+              <a v-if="soft.type == 'GithubSoftware'" target="_blank" class="githubLink" :href="`https://github.com/${soft.name}`">
+                <v-icon >mdi-github</v-icon>
+              </a>
               {{ soft.name }}
             </h2>
           </v-col>
@@ -147,4 +149,10 @@ export default class Group extends Vue {
 }
 </script>
 
-<style></style>
+<style>
+
+.githubLink {
+  text-decoration: none;
+}
+
+</style>
