@@ -38,7 +38,7 @@ export abstract class Version {
     }
     
     equals(b: Version): boolean {
-        return this.versionRaw == b.versionRaw;
+        return b && this.versionRaw == b.versionRaw;
     }
 
 }
