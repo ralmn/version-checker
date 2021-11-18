@@ -4,6 +4,9 @@ interface IConfig {
     auth: {
         jwt_secret: string
     }
+    github?: {
+        auth_token: string
+    }
 }
 
 export let config: IConfig = {

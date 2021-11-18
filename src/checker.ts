@@ -1,9 +1,11 @@
 import { createConnection } from "typeorm";
+import { loadConfig } from "./config";
 import { Software } from "./entity/Software";
 import { Version } from "./entity/versions/Version";
  
 
 async function main() {
+    await loadConfig();
     let connection = await createConnection();
 
     let repository = connection.getRepository(Software);

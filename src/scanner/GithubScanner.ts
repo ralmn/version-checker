@@ -1,10 +1,11 @@
 import axios from "axios";
 import { GithubSoftware } from "../entity/Githubsoftware";
-import { sortVersion } from "../utils";
 import * as semver from "semver";
 import { IScanner } from "./IScanner";
 import { buildVersion } from "../entity/versions/versionsUtils";
 import { Version } from "../entity/versions/Version";
+import { config } from "../config";
+
 
 
 const RATELIMIT_MINIMUM = 5;
@@ -32,7 +33,11 @@ function isPreRelease(version: string): boolean {
 
 export class GithubScanner implements IScanner<GithubSoftware> {
 
+    authToken: string | null;
 
+    constructor(){
+        this.authToken = config.github?.auth_token || null;
+    }
 
 
     async scanVersions(software: GithubSoftware): Promise<boolean> {
@@ -54,6 +59,12 @@ export class GithubScanner implements IScanner<GithubSoftware> {
             let requestHeaders = {
                 'Accept': 'application/vnd.github.v3+json'
             }
+
+            if(this.authToken){
+                console.log('Using github auth token');
+                requestHeaders['Authorization'] = `token ${this.authToken}`;
+            }
+
             const url = `https://api.github.com/repos/${software.repository}/${software.scanTags ? 'tags' : 'releases'}?per_page=99&page=1`;
             console.log(url);
             let { data, headers } = await axios.get(url, {
