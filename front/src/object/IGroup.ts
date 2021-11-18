@@ -20,6 +20,7 @@ export class ISoftware {
   versions?: Version[];
   latestVersion?: Version;
   groupVersion?: Version;
+  repository?: string;
 
   constructor(data?: any) {
     if (data) {
@@ -28,6 +29,7 @@ export class ISoftware {
       if (data.versions) this.versions = data.versions;
       if (data.latestVersion) this.latestVersion = data.latestVersion;
       if (data.groupVersion) this.groupVersion = data.groupVersion;
+      if (data.repository) this.repository = data.repository;
     }
   }
 

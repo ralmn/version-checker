@@ -95,7 +95,8 @@ export default class Dashboard extends Vue {
                 type: gv.software.type,
                 versions: (gv.software.versions as any[]).map(v => castVersionData(v)),
                 latestVersion: castVersionData(gv.software.latestVersion),
-                groupVersion: castVersionData(gv.version)
+                groupVersion: castVersionData(gv.version),
+                repository: gv.software.repository,
               });
             }),
             members: gm.group.members || [],

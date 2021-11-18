@@ -28,6 +28,9 @@
                 <v-icon v-if="dbSoftware.type == 'GithubSoftware'">
                   mdi-github
                 </v-icon>
+                <v-icon v-else-if="dbSoftware.type == 'DockerHubSoftware'">
+                  mdi-docker
+                </v-icon>
                 {{ dbSoftware.name }}
               </h2>
             </v-col>
@@ -77,6 +80,9 @@
                   <v-icon v-if="data.item.type == 'GithubSoftware'">
                     mdi-github
                   </v-icon>
+                  <v-icon v-else-if="data.item.type == 'DockerHubSoftware'">
+                      mdi-docker
+                    </v-icon>
                   {{ data.item.name }}
                 </template>
                 <template v-slot:selection="data">
@@ -89,6 +95,9 @@
                   <span v-else>
                     <v-icon v-if="data.item.type == 'GithubSoftware'">
                       mdi-github
+                    </v-icon>
+                    <v-icon v-else-if="data.item.type == 'DockerHubSoftware'">
+                      mdi-docker
                     </v-icon>
                     {{ data.item.name }}
                   </span>

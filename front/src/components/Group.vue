@@ -20,8 +20,11 @@
               !(soft.groupVersion && soft.latestVersion) ? 'mr-auto' : ''
             ">
             <h2>
-              <a v-if="soft.type == 'GithubSoftware'" target="_blank" class="githubLink" :href="`https://github.com/${soft.name}`">
+              <a v-if="soft.type == 'GithubSoftware'" target="_blank" class="githubLink" :href="`https://github.com/${soft.repository}`">
                 <v-icon >mdi-github</v-icon>
+              </a>
+              <a v-else-if="soft.type == 'DockerHubSoftware'" target="_blank" class="githubLink" :href="`https://hub.docker.com/r/${soft.repository}`">
+                <v-icon >mdi-docker</v-icon>
               </a>
               {{ soft.name }}
             </h2>
