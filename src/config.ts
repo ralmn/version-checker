@@ -36,7 +36,6 @@ export async function loadConfig() {
         config = mergeObject(config, o);
     }
     recurseLoad(config, 'version_checker');
-    process.exit(1);
 }
 
 function mergeObject(o1, o2){
