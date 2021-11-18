@@ -6,6 +6,10 @@ interface IConfig {
     }
     github?: {
         auth_token: string
+    },
+    dockerhub?: {
+        user: string,
+        access_token: string
     }
 }
 
