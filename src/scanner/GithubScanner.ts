@@ -36,7 +36,7 @@ export class GithubScanner implements IScanner<GithubSoftware> {
     authToken: string | null;
 
     constructor(){
-        this.authToken = config.github?.auth_token || null;
+        this.authToken = config.github?.token || null;
     }
 
 

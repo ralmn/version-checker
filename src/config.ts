@@ -5,7 +5,7 @@ interface IConfig {
         jwt_secret: string
     }
     github?: {
-        auth_token: string
+        token: string
     },
     dockerhub?: {
         user: string,
