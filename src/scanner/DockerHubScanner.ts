@@ -82,6 +82,9 @@ export class DockerHubScanner implements IScanner<DockerHubSoftware> {
                 edited = true;
             }
         });
+
+        software.versions.sort((a, b) => a.compare(b));
+
         let latest = software.versions.length > 0 ? software.versions[software.versions.length - 1] : null;
         if (latest && !latest.equals(software.latestVersion)) {
             software.latestVersion = latest;
