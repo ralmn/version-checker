@@ -25,6 +25,7 @@ export class SemVer extends Version {
   }
 
   compare(b: SemVer) {
+    if(b == null) return 1;
     if (this.major != b.major) {
       return this.major < b.major ? -1 : 1;
     } else if (this.minor != b.minor) {

@@ -8,8 +8,16 @@ interface IConfig {
         token: string
     },
     dockerhub?: {
-        user: string,
+        user: string
         token: string
+    },
+    email? : {
+        host: string
+        port: number
+        user: string
+        secure: boolean
+        pass: string
+        from: string
     }
 }
 

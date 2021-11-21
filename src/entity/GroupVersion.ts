@@ -18,6 +18,7 @@ export class GroupVersion {
 
 
     get isUpdated() : boolean {
+        if(this.version == null || this.software.latestVersion == null) return true;
         return this.software.latestVersion.compare(this.version) <= 0;
     }
 

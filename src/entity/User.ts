@@ -17,7 +17,13 @@ export class User {
     @Column({unique: true})
     email: string;
 
+    @Column({nullable: true})
+    alternativeEmail: string;
+
     @OneToMany(() => GroupMember, groupMember => groupMember.user)
     groupMembers: GroupMember[]
+
+    @Column({nullable: false, default: false})
+    email_weekly: boolean
 
 }
