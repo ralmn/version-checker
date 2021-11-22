@@ -10,8 +10,19 @@ export class WeeklyTemplate {
     private htmlSoftware(group: Group): string {
         let html = '';
 
-        for (let i = 0; i < group.versions.length; i++) {
-            let version = group.versions[i];
+        let versions = group.versions;
+        versions = versions.sort((a, b) => {
+            if(a.isUpdated == b.isUpdated){
+                return a.software.name.localeCompare(b.software.name);
+            }
+            if(a.isUpdated){
+                return 1;
+            }
+            return -1;
+        });
+
+        for (let i = 0; i < versions.length; i++) {
+            let version = versions[i];
             let color = version.isUpdated ? 'green' : 'orange';
             let updatedText = version.isUpdated ? 'Updated' : 'Update available';
             html += `
@@ -32,8 +43,8 @@ export class WeeklyTemplate {
                 </mj-column>
             </mj-section>
             `
-
-            if (i != group.versions.length - 1) {
+            // if not last, add divider
+            if (i != versions.length - 1) {
                 html += `
                 <mj-divider border-width="1px" width="75%"></mj-divider>
                 `;
