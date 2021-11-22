@@ -69,7 +69,7 @@ export class DockerHubScanner implements IScanner<DockerHubSoftware> {
         let tags = data.tags;
 
         let versions: Version[] = tags
-            .map(tag => buildVersion(tag, VersionType.Default))
+            .map(tag => buildVersion(tag, software.versionType))
             .sort((a, b) => a.compare(b));
 
         let edited = false;

@@ -14,10 +14,10 @@ export class SemVer extends Version {
   @Column()
   patch: number;
 
-  constructor(version: string){
+  constructor(version: string) {
     super(version);
-    let s = semverLib.coerce(version, {loose: true, includePrerelease: true});
-    if(s){
+    let s = semverLib.coerce(version, { loose: true, includePrerelease: true });
+    if (s) {
       this.major = s.major;
       this.minor = s.minor;
       this.patch = s.patch;
@@ -25,7 +25,7 @@ export class SemVer extends Version {
   }
 
   compare(b: SemVer) {
-    if(b == null) return 1;
+    if (b == null) return 1;
     if (this.major != b.major) {
       return this.major < b.major ? -1 : 1;
     } else if (this.minor != b.minor) {
@@ -33,6 +33,21 @@ export class SemVer extends Version {
     } else if (this.patch != b.patch) {
       return this.patch < b.patch ? -1 : 1;
     }
+
+    try {
+      let compare = semverLib.compareLoose(this.versionRaw, b.versionRaw);
+      if(compare != 0){
+        return compare;
+      }
+      let semverA = semverLib.coerce(this.versionRaw, { loose: true, includePrerelease: true });
+      let semverB = semverLib.coerce(b.versionRaw, { loose: true, includePrerelease: true });
+      if (semverA && semverB) {
+        return semverLib.compare(semverA, semverB);
+      }
+    } catch (e) {
+      //nothing
+    }
+
     return 0;
   }
 }
