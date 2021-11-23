@@ -4,7 +4,6 @@ import { Software } from "../../entity/Software";
 import { sortVersion } from "../../utils";
 import { IScanner } from "../IScanner";
 import * as cheerio from "cheerio";
-import { isJsxOpeningFragment } from "typescript";
 import * as semver from "semver";
 import { buildVersion } from "../../entity/versions/versionsUtils";
 import { SemVer } from "../../entity/versions/SemVer";
@@ -14,6 +13,30 @@ const domain = `https://docs.mirantis.com`;
 let versionRegex = /\/([0-9]+\.[0-9]+)\//;
 
 export class MirantisScanner implements IScanner<CustomSoftware> {
+
+  private async newParseMajorVersion($, majorVersion: string, code: string): Promise<string[]> {
+
+    let elems = $("#release-notes .card .card-header .card-text");
+
+    let versions: string[] = [];
+
+    for (let elem of elems) {
+      let $elem = $(elem);
+      let text = $elem.text().toLowerCase();
+      if(text.startsWith(code.toLowerCase())){
+        text = text.substring(code.length + 1).replace(/current/, '').trim();
+        let version = semver.coerce(text, {loose: true});
+        if(version){
+          versions.push(version.format());
+        }else{
+            console.log('failed to parse', text);
+        }
+      }
+    }
+    return versions;
+
+  }
+
   private async parseMajorVersion(
     majorVersion: string,
     code: string
@@ -29,6 +52,10 @@ export class MirantisScanner implements IScanner<CustomSoftware> {
     let $ = cheerio.load(data);
 
     let elems = $(".toctree-wrapper.compound ul li a");
+
+    if(elems.length == 0) {
+      return this.newParseMajorVersion($, majorVersion, code);
+    }
 
     let versions: string[] = [];
 
