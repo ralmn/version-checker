@@ -1,3 +1,3 @@
 #!/bin/bash
 
-yarn typeorm migration:show || yarn typeorm migration:run ; yarn ts-node .
+yarn typeorm migration:show || yarn typeorm migration:run ; yarn ts-node -r ./src/telemetry.ts .
