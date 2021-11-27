@@ -10,6 +10,11 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT) : 9999;
 const app = express();
 
 app.use(jsonBodyParser());
+app.use((req, res, next) => {
+    if(req.headers["uber-trace-id"]){
+        res.setHeader("traefik-uber-trace-id", req.headers["uber-trace-id"]);
+    }
+})
 app.use('/', mainRouter);
 
 
