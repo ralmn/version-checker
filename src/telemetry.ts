@@ -1,4 +1,6 @@
 import { NodeSDK, tracing } from '@opentelemetry/sdk-node';
+import { diag, DiagConsoleLogger, DiagLogLevel } from "@opentelemetry/api";
+
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { TypeormInstrumentation } from 'opentelemetry-instrumentation-typeorm';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-otlp-http';
@@ -29,6 +31,11 @@ if(process.env.JAEGER_ENDPOINT) {
         concurrencyLimit: 10, // an optional limit on pending requests
       };
     traceExporter =  new OTLPTraceExporter(collectorOptions);
+}
+
+
+if(process.env.TRACING_LOG === 'debug') {
+    diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
 }
 
 
