@@ -1,67 +1,72 @@
-import { NodeSDK, tracing } from '@opentelemetry/sdk-node';
-import { diag, DiagConsoleLogger, DiagLogLevel } from "@opentelemetry/api";
-
+import opentelemetry, { diag, DiagConsoleLogger, DiagLogLevel, context } from "@opentelemetry/api";
+import { NodeTracerProvider } from "@opentelemetry/node";
+import { registerInstrumentations } from '@opentelemetry/instrumentation'
+import { BatchSpanProcessor } from '@opentelemetry/tracing'
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
 import { TypeormInstrumentation } from 'opentelemetry-instrumentation-typeorm';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-otlp-http';
 import { ExpressInstrumentation } from '@opentelemetry/instrumentation-express';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { JaegerExporter } from '@opentelemetry/exporter-jaeger';
+import { getSpanContext } from "@opentelemetry/api/build/src/trace/context-utils";
 // import { ExpressPlugin } from "@opentelemetry/plugin-express";
 
-let traceExporter : tracing.SpanExporter = new tracing.InMemorySpanExporter();
+let tracerProvider = new NodeTracerProvider();
 
 
-if(process.env.JAEGER_ENDPOINT) {
+if (process.env.TRACING_LOG === 'debug') {
+    diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
+}
+
+registerInstrumentations({
+    tracerProvider: tracerProvider,
+    instrumentations: [
+        (getNodeAutoInstrumentations() as any),
+        new TypeormInstrumentation(),
+        // {
+        //     plugins: {
+        //         express: {
+        //             enabled: true,
+        //             path: '@opentelemetry/plugin-express',
+        //         }
+        //     }
+        // },
+        new ExpressInstrumentation(),
+        new HttpInstrumentation()
+    ]
+});
+
+
+if (process.env.JAEGER_ENDPOINT) {
     const options = {
         tags: [], // optional
-        // You can use the default UDPSender
-        // host: 'localhost', // optional
-        // port: 6832, // optional
-        // OR you can use the HTTPSender as follows
         endpoint: process.env.JAEGER_ENDPOINT, // 'http://localhost:14268/api/traces'
         maxPacketSize: 65000 // optional
-      }
-      traceExporter = new JaegerExporter(options);
-
-}else if(process.env.OTLP_HTTP_URL) {
+    }
+    let traceExporter = new JaegerExporter(options);
+    tracerProvider.addSpanProcessor(new BatchSpanProcessor(traceExporter));
+}
+if (process.env.OTLP_HTTP_URL) {
     const collectorOptions = {
         url: process.env.OTLP_HTTP_URL, // url is optional and can be omitted - default is http://localhost:55681/v1/traces
         headers: {}, // an optional object containing custom headers to be sent with each request
         concurrencyLimit: 10, // an optional limit on pending requests
-      };
-    traceExporter =  new OTLPTraceExporter(collectorOptions);
+    };
+    let traceExporter = new OTLPTraceExporter(collectorOptions);
+    tracerProvider.addSpanProcessor(new BatchSpanProcessor(traceExporter));
 }
 
 
-if(process.env.TRACING_LOG === 'debug') {
-    diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.DEBUG);
-}
+tracerProvider.register();
 
+export const tracer = opentelemetry.trace.getTracer("version-checker");
 
-const sdk = new NodeSDK({
-    traceExporter: traceExporter,
-    instrumentations: [
-        (getNodeAutoInstrumentations() as any ),
-        TypeormInstrumentation,
-        {
-            plugins: {
-                express: {
-                enabled: true,
-                path: '@opentelemetry/plugin-express',
-                }
-            }
-        },
-        ExpressInstrumentation,
-        HttpInstrumentation
-    ]
-});
-
-sdk.start()
-    .then(() => {
-        console.log('Tracing started');
-    })
-    .catch(e => {
-        console.log("Error on tracing", e.message);
-        console.log(e);
-    });
+export const addTraceId = (req, res, next) => {
+    const spanContext = getSpanContext(context.active());
+    if(spanContext){
+        req.traceId =  spanContext.traceId;
+        res.setHeader('vc-trace-id', spanContext.traceId)
+        console.log(`path=${req.path} traceId=${spanContext.traceId}`);
+    }
+    next();
+};

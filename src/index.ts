@@ -4,6 +4,7 @@ import { json as jsonBodyParser } from "body-parser";
 import { mainRouter } from "./routes";
 import { createConnection } from "typeorm";
 import { loadConfig } from "./config";
+import { addTraceId } from "./telemetry";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 9999;
 
@@ -15,7 +16,8 @@ app.use((req, res, next) => {
         res.setHeader("traefik-uber-trace-id", req.headers["uber-trace-id"]);
     }
     next();
-})
+});
+app.use(addTraceId);
 app.use('/', mainRouter);
 
 
