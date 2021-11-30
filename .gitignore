@@ -11,3 +11,4 @@ database/
 bugs
 
 config.json
+.DS_Store
