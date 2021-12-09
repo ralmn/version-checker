@@ -20,6 +20,9 @@ export class User {
     @Column({nullable: true})
     alternativeEmail: string;
 
+    @Column({default: false, nullable: false})
+    admin: boolean;
+
     @OneToMany(() => GroupMember, groupMember => groupMember.user)
     groupMembers: GroupMember[]
 

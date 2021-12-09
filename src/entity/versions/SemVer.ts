@@ -14,13 +14,23 @@ export class SemVer extends Version {
   @Column()
   patch: number;
 
+  @Column()
+  prerelease: boolean;
+
   constructor(version: string) {
     super(version);
-    let s = semverLib.coerce(version, { loose: true, includePrerelease: true });
+    let s = semverLib.parse(version);
+    if(s == null) {
+      s = semverLib.coerce(version, { loose: true, includePrerelease: true });
+    }
     if (s) {
       this.major = s.major;
       this.minor = s.minor;
       this.patch = s.patch;
+      if(this.major == 2 && this.minor == 10){
+        console.log(s);
+      }
+      this.prerelease = s.prerelease.length > 0;
     }
   }
 

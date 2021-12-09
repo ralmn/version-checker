@@ -9,6 +9,7 @@ export default new Vuex.Store({
     user: null,
     token: null,
     token_expire_at: null,
+    admin: false,
   },
   mutations: {
     setToken: (state, token) => {
@@ -23,6 +24,9 @@ export default new Vuex.Store({
       state.token_expire_at = null;
       state.user = null;
       localStorage.setItem("token", "");
+    },
+    setAdmin: (state, admin) => {
+      state.admin = admin;
     }
   },
   getters: {
@@ -32,6 +36,10 @@ export default new Vuex.Store({
         (state.token_expire_at == null ||
           state.token_expire_at * 1000 > new Date().getTime())
       );
+    },
+    isAdmin: (state: any) => {
+      console.log(state);
+      return state.admin;
     },
     getToken: (state) => {
       return state.token;

@@ -7,6 +7,10 @@
 
       <v-spacer></v-spacer>
 
+      <v-btn to="/admin" text v-if="isAdmin">
+        <span class="mr-2">Admin</span>
+      </v-btn>
+
       <v-btn to="/register" text v-if="!isLogged">
         <span class="mr-2">Register</span>
       </v-btn>
@@ -55,14 +59,22 @@ export default class App extends Vue {
             Authorization: `Bearer ${tokenLS}`,
           },
         })
-        .then(() => {
+        .then((res) => {
+          let user = res.data.user;
+          this.$store.commit("setAdmin", user.admin);
           this.$store.commit("setToken", tokenLS);
+
         });
     }
   }
 
   logout() {
     this.$store.commit("logout");
+  }
+
+  @Watch("$store.state")
+  get isAdmin() {
+      return this.$store.getters.isAdmin;
   }
 
   @Watch("$store.state")

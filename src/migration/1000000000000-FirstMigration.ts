@@ -18,7 +18,7 @@ export class FirstMigration1000000000000 implements MigrationInterface {
                 {name: "password", type: "varchar", isNullable: false},
             ]
         }), true, true, true);
-        
+
         let columnMetadataUseReleaseTag = new ColumnMetadata({
             connection: queryRunner.connection,
             entityMetadata: queryRunner.connection.getMetadata(GithubSoftware),
