@@ -31,14 +31,6 @@ registerInstrumentations({
     instrumentations: [
         (getNodeAutoInstrumentations() as any),
         new TypeormInstrumentation(),
-        // {
-        //     plugins: {
-        //         express: {
-        //             enabled: true,
-        //             path: '@opentelemetry/plugin-express',
-        //         }
-        //     }
-        // },
         new ExpressInstrumentation(),
         new HttpInstrumentation()
     ]
