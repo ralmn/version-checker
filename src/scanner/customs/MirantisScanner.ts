@@ -23,18 +23,29 @@ export class MirantisScanner implements IScanner<CustomSoftware> {
     for (let elem of elems) {
       let $elem = $(elem);
       let text = $elem.text().toLowerCase();
-      if(text.startsWith(code.toLowerCase())){
+      if (text.startsWith(code.toLowerCase())) {
         text = text.substring(code.length + 1).replace(/current/, '').trim();
-        let version = semver.coerce(text, {loose: true});
-        if(version){
+        let version = semver.coerce(text, { loose: true });
+        if (version) {
           versions.push(version.format());
-        }else{
-            console.log('failed to parse', text);
+        } else {
+          console.log('[MirantisScanner] failed to parse', text);
         }
       }
     }
     return versions;
 
+  }
+
+  private async parserMajorVersionV3(majorVersion: string, code: string): Promise<string[]>{
+    console.log('[MirantisScanner]  try parser v3');
+
+    let urlReleaseNotes = `${domain}/${code}/${majorVersion}/release-notes.html`;
+    console.log(`[MirantisScanner] ${urlReleaseNotes}`);
+    const { data } = await axios.get(urlReleaseNotes);
+    let $ = cheerio.load(data);
+
+    return await this.newParseMajorVersion($, majorVersion, code);
   }
 
   private async parseMajorVersion(
@@ -47,29 +58,39 @@ export class MirantisScanner implements IScanner<CustomSoftware> {
       /\./g,
       "-"
     )}.html`;
-    console.log(urlReleaseNotes);
-    const { data } = await axios.get(urlReleaseNotes);
-    let $ = cheerio.load(data);
+    console.log(`[MirantisScanner] ${urlReleaseNotes}`);
+    try {
 
-    let elems = $(".toctree-wrapper.compound ul li a");
+      const { data } = await axios.get(urlReleaseNotes);
+      let $ = cheerio.load(data);
 
-    if(elems.length == 0) {
-      return this.newParseMajorVersion($, majorVersion, code);
-    }
+      let elems = $(".toctree-wrapper.compound ul li a");
 
-    let versions: string[] = [];
+      if (elems.length == 0) {
+        return this.newParseMajorVersion($, majorVersion, code);
+      }
 
-    for (let elem of elems) {
-      let $elem = $(elem);
-      let text = $elem.text();
-      let version = semver.coerce(text, {loose: true});
-      if(version){
-        versions.push(version.format());
+      let versions: string[] = [];
+
+      for (let elem of elems) {
+        let $elem = $(elem);
+        let text = $elem.text();
+        let version = semver.coerce(text, { loose: true });
+        if (version) {
+          versions.push(version.format());
+        } else {
+          console.log('[MirantisScanner] failed to parse', text);
+        }
+      }
+      return versions;
+
+    } catch (e) {
+      if(e.response.status == 404){
+        return await this.parserMajorVersionV3(majorVersion, code);
       }else{
-          console.log('failed to parse', text);
+        throw e;
       }
     }
-    return versions;
   }
 
   async scanVersions(software: CustomSoftware): Promise<boolean> {
@@ -78,7 +99,7 @@ export class MirantisScanner implements IScanner<CustomSoftware> {
       software.data
     );
     if (!("code" in software.data)) {
-      console.log("Missing code...");
+      console.log("[MirantisScanner] Missing code...");
       return false;
     }
 
