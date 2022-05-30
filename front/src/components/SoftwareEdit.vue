@@ -45,7 +45,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-text-field label="SemVer Requirement" v-model="dbSoftware.versionSemverRequirement"></v-text-field>
+            <v-text-field label="SemVer Requirement" v-if="dbSoftware.versionType == 'SemVer'" v-model="dbSoftware.versionSemverRequirement"></v-text-field>
           </v-row>
           <v-row>
             <v-col>
@@ -259,6 +259,8 @@ export default class SoftwareEdit extends Vue {
               versions: (gv.software.versions as any[]).map(v => castVersionData(v)),
               latestVersion: castVersionData(gv.software.latestVersion),
               groupVersion: castVersionData(gv.version),
+              repository: gv.software.repository,
+              versionType: gv.software.versionType,
               versionSemverRequirement: gv.versionSemverRequirement
             });
             this.dbSoftware = software;
