@@ -45,6 +45,9 @@
             </v-col>
           </v-row>
           <v-row>
+            <v-text-field label="SemVer Requirement" v-model="dbSoftware.versionSemverRequirement"></v-text-field>
+          </v-row>
+          <v-row>
             <v-col>
               <v-btn
                 color="primary"
@@ -255,11 +258,11 @@ export default class SoftwareEdit extends Vue {
               type: gv.software.type,
               versions: (gv.software.versions as any[]).map(v => castVersionData(v)),
               latestVersion: castVersionData(gv.software.latestVersion),
-              groupVersion: castVersionData(gv.version)
+              groupVersion: castVersionData(gv.version),
+              versionSemverRequirement: gv.versionSemverRequirement
             });
             this.dbSoftware = software;
             this.currentVersion = software.groupVersion?.versionRaw || null;
-
             resolve();
           }).catch(e => {
             reject(e);
@@ -350,14 +353,15 @@ export default class SoftwareEdit extends Vue {
   }
 
   saveSoftware() {
+    let data : {version: any, versionSemverRequirement?: string} = { version: this.currentVersion!};
+    if(this.dbSoftware!.versionSemverRequirement){
+      data.versionSemverRequirement = this.dbSoftware!.versionSemverRequirement;
+    }
     axios
       .post(
         `/api/user/group/${this.group.id}/software/${
           this.dbSoftware!.name
-        }/version`,
-        {
-          version: this.currentVersion!,
-        },
+        }/version`, data,
         {
           headers: {
             authorization: `Bearer ${this.$store.state.token}`,
@@ -374,7 +378,10 @@ export default class SoftwareEdit extends Vue {
             type: gv.software.type,
             versions: (gv.software.versions as any[]).map(v => castVersionData(v)),
             latestVersion: castVersionData(gv.software.latestVersion),
-            groupVersion: castVersionData(gv.version)
+            groupVersion: castVersionData(gv.version),
+            repository: gv.software.repository,
+            versionType: gv.software.versionType,
+            versionSemverRequirement: gv.versionSemverRequirement
           });
           //this.$emit("update:software", software);
           this.$emit("update", software);

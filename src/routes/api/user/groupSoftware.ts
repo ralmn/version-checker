@@ -1,5 +1,6 @@
 import { getConnection } from "typeorm";
 import { GroupVersion } from "../../../entity/GroupVersion";
+import { Version } from "../../../entity/versions/Version";
 
 export async function groupSoftware(req, res){
 
@@ -27,6 +28,7 @@ export async function groupSoftware(req, res){
     .createQueryBuilder('gv')
         .innerJoinAndSelect('gv.software', 'software')
         .innerJoinAndSelect('gv.group', 'group', 'group.id = :gid', {gid: req.params.gId})
+        .leftJoinAndMapOne('gv.version', Version, 'version', 'gv.software = version.software and gv.version = version.versionRaw')
         .innerJoinAndSelect('group.members', 'members')
         .innerJoinAndSelect('members.user', 'user', 'user.id = :uid', {uid: req.user.id})
         .leftJoinAndSelect('software.versions', 'versions')

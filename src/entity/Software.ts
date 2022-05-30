@@ -3,6 +3,8 @@ import { DefaultVersion } from "./versions/DefaultVersion";
 import { buildVersion } from "./versions/versionsUtils";
 import { Version } from "./versions/Version";
 import { VersionType } from "./versions/VersionType";
+import { SemVer } from "./versions/SemVer";
+import { builtinModules } from "module";
 
 @Entity()
 @TableInheritance({ column: { type: "varchar", name: "type" } })
@@ -46,5 +48,22 @@ export abstract class Software {
     }
 
     public abstract scanVersions(): Promise<boolean>;
+
+    public findLatestVersionFromRequirement(requirement: string) : SemVer | null {
+        if(this.versionType != VersionType.SemVer){
+            return null;
+        }
+
+        let versions = this.versions
+            .filter(v => v.versionType == VersionType.SemVer)
+            .map(v => v as SemVer)
+            .filter(v => v.matchRequirement(requirement))
+            .sort((a, b) => a.compare(b));
+        
+        if(versions.length){
+            return versions[versions.length - 1];
+        }
+        return null;
+    }
 
 }

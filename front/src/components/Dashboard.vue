@@ -38,12 +38,20 @@
 
       <v-col>
         <v-sheet min-height="70vh" rounded="lg">
-          <v-container v-if="groups.length == 0">
+          <template v-if="loading">
+            <center>
+              <v-progress-circular
+                indeterminate
+                color="primary" />
+            </center>
+            <center>Loading...</center>
+          </template>
+          <template v-else-if="groups.length == 0">
             <p>First step : create your first group</p>
-          </v-container>
-          <v-container v-else-if="selectedGroup == null">
+          </template>
+          <template v-else-if="selectedGroup == null">
             <p>Please select your first group</p>
-          </v-container>
+          </template>
           <Group v-else v-model="selectedGroup" @update="groupEdited" />
           <!--  -->
         </v-sheet>
@@ -71,12 +79,14 @@ import { castVersionData } from "@/object/Version";
 export default class Dashboard extends Vue {
   private groups: IGroup[] = [];
   private selectedGroup: IGroup | null = null;
+  private loading = false;
 
   mounted() {
     this.loadGroups();
   }
 
   loadGroups() {
+    this.loading = true;
     axios
       .get("/api/user/groups", {
         headers: {
@@ -97,6 +107,8 @@ export default class Dashboard extends Vue {
                 latestVersion: castVersionData(gv.software.latestVersion),
                 groupVersion: castVersionData(gv.version),
                 repository: gv.software.repository,
+                versionType: gv.software.versionType,
+                versionSemverRequirement: gv.versionSemverRequirement
               });
             }),
             members: gm.group.members || [],
@@ -119,6 +131,7 @@ export default class Dashboard extends Vue {
         } else {
           this.selectedGroup = null;
         }
+        this.loading = false;
         this.$forceUpdate();
       });
   }

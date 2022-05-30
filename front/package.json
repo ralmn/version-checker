@@ -12,7 +12,7 @@
     "core-js": "^3.6.5",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
-    "semver": "^7.3.5",
+    "semver": "^7.3.7",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",

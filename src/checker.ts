@@ -13,6 +13,7 @@ async function main() {
 
     let softs = await repository
         .createQueryBuilder('s')
+        .where("s.name = 'MKE'")
         .select()
         .addOrderBy('s.updatedAt', "ASC", 'NULLS FIRST')
         .leftJoinAndSelect('s.versions', 'version')

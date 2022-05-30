@@ -57,7 +57,11 @@
         </v-row>
         <v-row>
           <v-col>Current version : {{ (soft.groupVersion ? soft.groupVersion.versionRaw : null) || "Unknowed" }}</v-col>
-          <v-col>Latest version : {{ (soft.latestVersion? soft.latestVersion.versionRaw : null) || "Unknowed" }}</v-col>
+          <v-col>
+            Latest version : {{ (soft.latestVersionWithRequirements? soft.latestVersionWithRequirements.versionRaw : null) || "Unknowed" }}
+            <span v-if="soft.latestVersionWithRequirements != soft.latestVersion">({{soft.latestVersion.versionRaw}})</span>
+
+          </v-col>
         </v-row>
         <v-row></v-row>
         <v-divider

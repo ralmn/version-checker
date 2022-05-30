@@ -10,7 +10,8 @@ import { SemVer } from "../../entity/versions/SemVer";
 
 const domain = `https://docs.mirantis.com`;
 
-let versionRegex = /\/([0-9]+\.[0-9]+)\//;
+let versionURLRegex = /\/([0-9]+\.[0-9]+)\//;
+let versionRegex = /^([0-9]+\.[0-9]+)/;
 
 export class MirantisScanner implements IScanner<CustomSoftware> {
 
@@ -110,8 +111,9 @@ export class MirantisScanner implements IScanner<CustomSoftware> {
     try {
       let res = await axios.get(url);
       let urlRedirected = res.request.path;
-      let regexData = versionRegex.exec(urlRedirected);
+      let regexData = versionURLRegex.exec(urlRedirected);
       let currentVersionGlobal = regexData[1];
+      console.log('Current version', currentVersionGlobal);
       let versions = [];
       versions.push(
         ...(await this.parseMajorVersion(currentVersionGlobal, code))
@@ -124,7 +126,10 @@ export class MirantisScanner implements IScanner<CustomSoftware> {
       for (let elem of elems) {
         let $elem = $(elem);
         let majorVersion = $elem.text().trim();
-        versions.push(...(await this.parseMajorVersion(majorVersion, code)));
+        
+        let majorVersionRegexData = versionRegex.exec(majorVersion);
+        console.log(`Another version : "${majorVersion}"`)
+        versions.push(...(await this.parseMajorVersion(majorVersionRegexData[1], code)));
       }
 
       versions = versions.sort(sortVersion).reverse();

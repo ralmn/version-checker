@@ -60,4 +60,9 @@ export class SemVer extends Version {
 
     return 0;
   }
+
+  matchRequirement(requirement: string){
+    return semverLib.satisfies(this.versionRaw, requirement);
+  }
+ 
 }

@@ -1,3 +1,4 @@
+import * as semverLib from "semver"
 export enum VersionType {
   SemVer = "SemVer",
   Default = "DefaultVersion",
@@ -57,6 +58,10 @@ export class SemVer extends Version implements ISemVer {
       return this.patch < b.patch ? -1 : 1;
     }
     return 0;
+  }
+
+  matchRequirement(requirement: string){
+    return semverLib.satisfies(this.versionRaw, requirement);
   }
 }
 
