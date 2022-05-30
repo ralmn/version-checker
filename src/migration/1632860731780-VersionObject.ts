@@ -48,6 +48,13 @@ export class VersionObject1632860731780 implements MigrationInterface {
         const vRepo = queryRunner.connection.getRepository(SemVer);
 
         
+        let needCommitAtEnd = true;
+        if(queryRunner.isTransactionActive){
+            console.log('commit transac 1 ');
+            await queryRunner.commitTransaction();
+            needCommitAtEnd = false;
+        }
+        await queryRunner.startTransaction();
 
         let softwares = await queryRunner.connection.query('select "name", "versions", "latestVersion", "type" from software');
 
@@ -96,7 +103,7 @@ export class VersionObject1632860731780 implements MigrationInterface {
             referencedColumnNames: ['versionRaw', 'softwareName']
         }));
 
-
+        console.log('commit transac 2');
         await queryRunner.commitTransaction();
         await queryRunner.startTransaction();
 
@@ -106,6 +113,11 @@ export class VersionObject1632860731780 implements MigrationInterface {
         }
         for(let s of softwares) {
             await sRepo.createQueryBuilder('s').where('name = :name', {name: s.name}).update().set({versionType: VersionType.SemVer}).execute()
+        }
+
+        if(needCommitAtEnd){
+            console.log('commit transac final');
+            await queryRunner.commitTransaction();
         }
 
     }
