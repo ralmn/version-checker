@@ -11,8 +11,8 @@ export async function groups(req, res) {
 
     let data = await groupMemberRepository.createQueryBuilder('gm')
         .innerJoinAndMapOne('gm.group', Group, 'group' , 'gm.groupId = group.id')
-        .innerJoinAndMapMany('group.versions', GroupVersion ,'gv', 'group.id = gv.groupId')
-        .innerJoinAndMapOne('gv.software', Software, 'software', 'gv.software = software.name')
+        .leftJoinAndMapMany('group.versions', GroupVersion ,'gv', 'group.id = gv.groupId')
+        .leftJoinAndMapOne('gv.software', Software, 'software', 'gv.software = software.name')
         .leftJoinAndMapOne('gv.version', Version, 'version', 'gv.software = version.software and gv.version = version.versionRaw')
         .leftJoinAndMapMany('software.versions', Version, 's_versions', 'software.name = version.software')
         .leftJoinAndMapOne('software.latestVersion', Version, 's_latestVersion', 'software.name = s_latestVersion.software and software.latestVersion = s_latestVersion.versionRaw')

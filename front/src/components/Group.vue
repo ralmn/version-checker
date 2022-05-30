@@ -92,7 +92,9 @@
       v-model="softwareEdit"
       :group="_group"
       @close="softwareEdit = null"
-      @update="updateFromSoftwareEdit" />
+      @update="updateFromSoftwareEdit" 
+      @remove="removeSoftware"
+      />
   </v-container>
 </template>
 
@@ -148,6 +150,17 @@ export default class Group extends Vue {
       }
       this.$emit("update", this.group);
     }
+  }
+
+  removeSoftware(software: ISoftware){
+    let index = this.group.softwares.findIndex(
+        (s) => s.name == software.name
+      );
+      if (index != -1) {
+        this.group.softwares.splice(index, 1);
+        this.$emit("update", this.group);
+      }
+      
   }
 }
 </script>

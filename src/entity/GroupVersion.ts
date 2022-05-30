@@ -12,7 +12,7 @@ export class GroupVersion {
     @ManyToOne(() => Software, {primary: true, onDelete: "RESTRICT", onUpdate: "RESTRICT"})
     software: Software;
 
-    @OneToOne(() => Version, {nullable: false})
+    @OneToOne(() => Version, {nullable: true})
     @JoinColumn({name: 'version', referencedColumnName: 'versionRaw'})
     version: Version;
 

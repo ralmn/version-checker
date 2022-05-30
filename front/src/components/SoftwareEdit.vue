@@ -176,6 +176,9 @@
           </v-row>
         </v-container>
       </div>
+      <v-card-actions>
+        <v-btn color="error" v-if="dbSoftware != null" @click="remove">Remove</v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -337,7 +340,7 @@ export default class SoftwareEdit extends Vue {
             latestVersion: castVersionData(gv.software.latestVersion),
             groupVersion: castVersionData(gv.version)
           });
-          this.$emit("update:software", software);
+          this.$emit("update", software);
           this.dbSoftware = software;
         }
       })
@@ -405,6 +408,24 @@ export default class SoftwareEdit extends Vue {
     //this.software = null;
     this.$emit("close");
   }
+
+  async remove(){
+    if(this.dbSoftware == null) return;
+    try{
+      await axios.delete(`/api/user/group/${this.group.id}/software/${this.dbSoftware?.name}`, {
+          headers: {
+            authorization: `Bearer ${this.$store.state.token}`,
+            "Content-Type": "application/json",
+          },
+        })
+        this.$emit("remove", this.dbSoftware);
+        this.$emit("close");
+    }catch(err : any){
+      console.log(err, err.response)
+      this.errorMessage = err.response.data.error;
+    }
+  }
+
 }
 </script>
 

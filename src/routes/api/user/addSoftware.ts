@@ -45,7 +45,7 @@ export async function addSoftware(req, res) {
         .values([{
             group: g,
             software: software,
-            version: ''
+            version: null
         }]).execute();
 
     gv = await gvRepo.createQueryBuilder('gv')
